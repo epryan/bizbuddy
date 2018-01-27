@@ -1,0 +1,16 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}, the obvious solution to your small business needs!
+
+  h1 #{title} metrics
+
+  if error
+    p Error retrieving invoice metrics
+  else
+    p The database currently holds:
+
+    ul
+      li #[strong Invoices:] !{data.invoice_count}
+      li #[strong Businesses:] !{data.business_count}

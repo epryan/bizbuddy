@@ -1,0 +1,36 @@
+extends layout
+
+block content
+  h1 #{title}
+
+  div.row
+    div.col-6
+      form(method='post' action='')
+        div.form-group
+          label(for='legal_name') Legal Name:
+          input#legal_name.form-control(type='text', placeholder='Roberts Gourmet Burgers', name='legal_name' value=(undefined===business ? '' : business.legal_name))
+
+        div.form-group
+          label(for='nickname') Nickname:
+          input#nickname.form-control(type='text', placeholder='Bobs Burgers', name='nickname' value=(undefined===business ? '' : business.nickname))
+
+        div.form-group
+          label(for='address_line_1') Street Address:
+          input#address_line_1.form-control(type='text', placeholder='99TH PL SE', name='address_line_1' value=(undefined===business ? '' : business.address_line_1))
+
+        div.form-group
+          label(for='address_line_2') City, State Zip:
+          input#address_line_2.form-control(type='text', placeholder='SEATTLE, WA 98101', name='address_line_2' value=(undefined===business ? '' : business.address_line_2))
+
+        div.form-group
+          label(for='contact_name') Contact Number:
+          input#contact_number.form-control(type='tel', placeholder='(123)455-4321', name='tel' value=(undefined===business ? '' : business.contact_number))
+
+          hr
+
+          button.btn.btn-primary(type='submit') Submit
+
+        if errors
+          ul
+            for error in errors
+              li!= error.msg

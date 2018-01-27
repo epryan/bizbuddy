@@ -1,0 +1,136 @@
+// This pug template is adapted from Christos Georgiou's work located at: https://codepen.io/ChristosGeorgiou/pen/WrwxgM
+// Potentially use 3.3.5 vs 3.3.7: maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css
+
+mixin billable_row(billable_item)
+  tr
+    td= billable_item.description
+    td.text-center
+      span.mono= billable_item.quantity
+    td.text-center
+      span.mono= billable_item.unit_price
+    td.text-center
+      span.mono= billable_item.total_price
+
+doctype html
+html(lang='en')
+  head
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/stylesheets/invoice-style.css')
+
+  body
+    div.container.invoice
+      div.invoice-header
+        div.row
+          div.col-xs-8
+            h1 Invoice
+            h4.text-muted= 'NO: ' + invoice.invoice_number + ' | Date: ' + invoice.billing_date
+
+          div.col-xs-4
+            div.media
+              div.media-left
+                img.media-object.logo(src='/images/dots.png')
+
+              // Custom Base By Dottie Logo (no db linkage)
+              ul.media-body.list-unstyled
+                li !{'<b>Base By Dottie</b>'}
+                li= 'Commercial Flooring & Finish'
+                li= 'Bellevue, WA 98007'
+                li= 'dottie@basebydottie.com'
+
+      div.invoice-body
+        div.row
+          div.col-xs-5
+            div.panel.panel-default
+              div.panel-heading
+                h3.panel-title= 'Company Details'
+              div.panel-body
+                dl.dl-horizontal
+                  dt= 'Name'
+                  // TODO: boldface biz name
+                  dd= business_from.legal_name
+
+                  dt= 'Address'
+                  dd= business_from.address_line_1
+                  dd= business_from.address_line_2
+
+                  if business_from.contact_number
+                    dt= 'Phone'
+                    dd= business_from.contact_number
+
+                  if business_from.email
+                    dt= 'Email'
+                    dd= business_from.email
+
+                  if business_from.tax_id
+                    dt= 'Tax NO'
+                    dd= business_from.tax_id
+
+          div.col-xs-7
+            div.panel.panel-default
+              div.panel-heading
+                h3.panel-title= 'Customer Details'
+              div.panel-body
+                dl.dl-horizontal
+                  dt= 'Name'
+                  // TODO: boldface biz name
+                  dd= business_to.legal_name
+
+                  dt= 'Address'
+                  dd= business_to.address_line_1
+                  dd= business_to.address_line_2
+
+                  if business_to.contact_number
+                    dt= 'Phone'
+                    dd= business_to.contact_number
+
+                  if business_to.email
+                    dt= 'Email'
+                    dd= business_to.email
+
+        div.panel.panel-default
+          div.panel-heading
+            h3.panel-title= 'Services'
+
+          table.table.table-bordered.table-condensed
+            thead
+              tr
+                th= 'Item/Details'
+                th.text-center.colfix= 'QTY'
+                th.text-center.colfix= 'Unit Cost'
+                th.text-center.colfix= 'Total Cost'
+            tbody
+              for billable in billables
+                +billable_row(billable)
+
+        div.panel.panel-default
+          table.table.table-bordered.table-condensed
+            thead
+              tr
+                td.text-center.col-xs-1= 'Total Cost'
+            tbody
+              tr
+                th.text-center.rowtotal.mono= '$' + invoice_price
+
+        div.row
+          div.col-xs-7
+            div.panel.panel-default
+              div.panel-body
+                i= 'Comments / Notes'
+                hr(style='margin: 3px 0 5px')
+                if invoice.notes
+                  p= invoice.notes
+
+          div.col-xs-5
+            div.panel.panel-default
+              div.panel-heading
+                h3.panel-title= 'Services Available'
+              div.panel-body
+                //p= 'Services Available'
+                ul
+                  li= 'Commercial Base Installation'
+                  li= 'Commercial Carpet Installation'
+
+      div.invoice-footer
+        p= 'Thanks!'

@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h1= title
+
+  ul
+  each invoice in invoice_list
+    li
+      a(href=invoice.url) #{invoice.invoice_number}
+      | (#{invoice.project_name})
+
+  else
+    li There are no invoices!

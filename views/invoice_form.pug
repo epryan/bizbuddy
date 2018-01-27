@@ -1,0 +1,102 @@
+extends layout
+
+mixin billable(div_id, isVisible)
+  if isVisible
+    div(id=div_id)
+      div.col-sm-4.form-group
+        label(for= div_id + '_description') Description:
+        input.form-control(type= 'text' name= 'description' id= div_id + '_description')
+      div.col-sm-2.form-group
+        label(for= div_id + '_quantity') Quantity:
+        input.form-control(type= 'number' name= 'quantity' min= '1.0' step='1.0' id= div_id + '_quantity')
+      div.col-sm-2.form-group
+        label(for= div_id + '_unit_price') Unit Price:
+        input.form-control(type= 'number' name= 'unit_price' min= '1.0' step='1.0' id= div_id + '_unit_price')
+      div.col-sm-2.form-group
+        label(for= div_id + '_total_price') Total Price:
+        //input.form-control(type= 'text' name= 'total_price' id= div_id + '_total_price' readonly)
+        input.form-control(type= 'text' name= 'total_price' id= div_id + '_total_price')
+  else
+    div(id=div_id hidden)
+      div.col-sm-4.form-group
+        label(for= div_id + '_description') Description:
+        input.form-control(type= 'text' name= 'description' id= div_id + '_description')
+      div.col-sm-2.form-group
+        label(for= div_id + '_quantity') Quantity:
+        input.form-control(type= 'text' name= 'quantity' min= '1.0' step='1.0' id= div_id + '_quantity')
+      div.col-sm-2.form-group
+        label(for= div_id + '_unit_price') Unit Price:
+        input.form-control(type= 'text' name= 'unit_price' min= '1.0' step='1.0' id= div_id + '_unit_price')
+      div.col-sm-2.form-group
+        label(for= div_id + '_total_price') Total Price:
+        //input.form-control(type= 'text' name= 'total_price' id= div_id + '_total_price' readonly)
+        input.form-control(type= 'text' name= 'total_price' id= div_id + '_total_price')
+
+block content
+  script(src='/javascripts/invoice_form.js')
+
+  h1.text-center #{title}
+
+  form(action='' method='post' id="form_invoice")
+    h3.text-center !{'<u>Business Info</u>'}
+    div.form-group
+      label(for='bill_to') Invoice to:
+      select#bill_to.form-control(type='select', placeholder='Select a business', name='bill_to')
+        //Did we get passed a list for the billing dropdowns?
+        if business_list
+          for business in business_list
+            option(value= business.legal_name) #{business.legal_name}
+            //Was the business supplied a nickname upon creation?
+            //**creates sorting difficulties when not all biz have nickname in db
+            //if business.nickname
+            //  option(value= business.id) #{business.nickname}
+            //else
+            //  option(value= business.id) #{business.legal_name}
+        //Default option to allow the user to create a business on the fly inside of invoices
+        option(value='new' disabled) Need more? Create New Biz First!
+
+    div.form-group
+      label(for='billing_date') Billing Date:
+      input#billing_date.form-control(type='date', placeholder='01/01/2018', name='billing_date' value=(undefined===invoice ? '' : invoice.billing_date))
+
+    div.form-group
+      label(for='invoice_number') Invoice Number:
+      input#invoice_number.form-control(type='text', placeholder='8675309', name='invoice_number' value=(undefined===invoice ? '' : invoice.invoice_number))
+
+    div.form-group
+      label(for='project_name') Project Name:
+      input#project_name.form-control(type='text', placeholder='Anything but Facebook!', name='project_name' value=(undefined===invoice ? '' : invoice.project_name))
+
+    div.form-group
+      label(for='project_address') Project Address:
+      input#project_address.form-control(type='text', placeholder='Street City, WA Zip', name='project_address' value=(undefined===invoice ? '' : invoice.project_address))
+
+    hr
+
+    div.row
+      h3.text-center !{'<u>Billing Items</u>'}
+      +billable('billable_0', true)
+      - var i = 1;
+      while i < 5
+        +billable('billable_' + i++, false)
+
+    button.btn.btn-primary(type='button' onClick='showNextBillable()') More Work
+
+    hr
+
+    div.form-group
+      label(for='notes') Notes:
+      input#notes.form-control(type='text', placeholder='That job was wack!', name='notes' value=(undefined===invoice ? '' : invoice.notes))
+
+    hr
+
+    //button.btn.btn-primary(type='submit') Submit
+    button.btn.btn-primary(type='button' onClick='validateForm()') Submit
+
+    // Hidden POST variables
+    input#invoice_price.form-control(type='hidden', name='invoice_price', value=(undefined===invoice_price ? 0 : invoice_price))
+
+    if errors
+      ul
+        for error in errors
+          li!= error.msg
