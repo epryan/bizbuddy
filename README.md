@@ -12,8 +12,8 @@
     - mongod --fork --logpath /var/log/mongodb.log --dbpath data/db
 
   - Start the web app!
-    - node app.js
+    - npm run start
     - or
-    - DEBUG=meanbase:* npm run start
+    - DEBUG=meanbase:* npm run devstart
 
   - The default config listens on port 3000 (ie. http://localhost:3000/)
