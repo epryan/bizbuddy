@@ -41,7 +41,7 @@ html(lang='en')
 
       div.invoice-body
         div.row
-          div.col-xs-5
+          div.col-xs-6
             div.panel.panel-default
               div.panel-heading
                 h3.panel-title= 'Company Details'
@@ -67,7 +67,7 @@ html(lang='en')
                     dt= 'Tax NO'
                     dd= business_from.tax_id
 
-          div.col-xs-7
+          div.col-xs-6
             div.panel.panel-default
               div.panel-heading
                 h3.panel-title= 'Customer Details'
@@ -84,10 +84,14 @@ html(lang='en')
                   if business_to.contact_number
                     dt= 'Phone'
                     dd= business_to.contact_number
+                  else
+                    br
 
                   if business_to.email
                     dt= 'Email'
                     dd= business_to.email
+                  else
+                    br
 
         div.panel.panel-default
           div.panel-heading

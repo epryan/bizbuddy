@@ -1,6 +1,7 @@
 const MAXBILLABLES = 5;
 
 var nextId = 1;
+// Display the next available billable item in the form
 function showNextBillable() {
   if (nextId < MAXBILLABLES) {
     var billableId = '#billable_' + nextId;
@@ -10,6 +11,13 @@ function showNextBillable() {
   }
 }
 
+function truncateAmount(elem) {
+  if (elem && elem.value) {
+    elem.value = parseFloat(parseInt(elem.value * 100) / 100).toFixed(2);
+  }
+}
+
+// Sum the subtotals in a hidden element and post the form
 function validateForm() {
 
   // Collect the subtotals and store them in the hidden invoice_price element

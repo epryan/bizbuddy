@@ -8,14 +8,14 @@ mixin billable(div_id, isVisible)
         input.form-control(type= 'text' name= 'description' id= div_id + '_description')
       div.col-sm-2.form-group
         label(for= div_id + '_quantity') Quantity:
-        input.form-control(type= 'number' name= 'quantity' min= '1.0' step='1.0' id= div_id + '_quantity')
+        input.form-control(type= 'number' name= 'quantity' min= '1.0' step='1.0' id= div_id + '_quantity' onchange="truncateAmount(this)")
       div.col-sm-2.form-group
         label(for= div_id + '_unit_price') Unit Price:
-        input.form-control(type= 'number' name= 'unit_price' min= '1.0' step='1.0' id= div_id + '_unit_price')
+        input.form-control(type= 'number' name= 'unit_price' min= '1.0' step='1.0' id= div_id + '_unit_price' onchange="truncateAmount(this)")
       div.col-sm-2.form-group
         label(for= div_id + '_total_price') Total Price:
         //input.form-control(type= 'text' name= 'total_price' id= div_id + '_total_price' readonly)
-        input.form-control(type= 'text' name= 'total_price' id= div_id + '_total_price')
+        input.form-control(type= 'text' name= 'total_price' id= div_id + '_total_price' onchange="truncateAmount(this)")
   else
     div(id=div_id hidden)
       div.col-sm-4.form-group
@@ -23,14 +23,14 @@ mixin billable(div_id, isVisible)
         input.form-control(type= 'text' name= 'description' id= div_id + '_description')
       div.col-sm-2.form-group
         label(for= div_id + '_quantity') Quantity:
-        input.form-control(type= 'text' name= 'quantity' min= '1.0' step='1.0' id= div_id + '_quantity')
+        input.form-control(type= 'text' name= 'quantity' min= '1.0' step='1.0' id= div_id + '_quantity' onchange="truncateAmount(this)")
       div.col-sm-2.form-group
         label(for= div_id + '_unit_price') Unit Price:
-        input.form-control(type= 'text' name= 'unit_price' min= '1.0' step='1.0' id= div_id + '_unit_price')
+        input.form-control(type= 'text' name= 'unit_price' min= '1.0' step='1.0' id= div_id + '_unit_price' onchange="truncateAmount(this)")
       div.col-sm-2.form-group
         label(for= div_id + '_total_price') Total Price:
         //input.form-control(type= 'text' name= 'total_price' id= div_id + '_total_price' readonly)
-        input.form-control(type= 'text' name= 'total_price' id= div_id + '_total_price')
+        input.form-control(type= 'text' name= 'total_price' id= div_id + '_total_price' onchange="truncateAmount(this)")
 
 block content
   script(src='/javascripts/invoice_form.js')
