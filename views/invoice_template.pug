@@ -129,12 +129,10 @@ html(lang='en')
           div.col-xs-5
             div.panel.panel-default
               div.panel-heading
-                h3.panel-title= 'Services Available'
+                h3.panel-title= 'Job Description'
               div.panel-body
-                //p= 'Services Available'
-                ul
-                  li= 'Commercial Base Installation'
-                  li= 'Commercial Carpet Installation'
+                  p= invoice.project_name
+                  p= invoice.project_address
 
       div.invoice-footer
         p= 'Thanks!'

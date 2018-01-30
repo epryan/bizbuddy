@@ -1,5 +1,5 @@
-// A simple 'mixin' template for my sidebar buttons
-// (link, name) -> <li><a class="btn btn-primary sidebar-btn" href="link">name</a></li>
+//- A simple 'mixin' template for my sidebar buttons
+//- (link, name) -> <li><a class="btn btn-primary sidebar-btn" href="link">name</a></li>
 mixin sidebar-button(link, name)
   li
     a.btn.btn-primary.sidebar-btn(href= link) #{name}
@@ -14,7 +14,7 @@ html(lang='en')
     meta(author= 'Ryan Erickson (ryan@ryansip.com)')
 
     link(rel='stylesheet', href='/stylesheets/style.css')
-    link(rel='stylesheet', href='/stylesheets/narrow-jumbotron.css')
+    //- link(rel='stylesheet', href='/stylesheets/narrow-jumbotron.css')
     link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css')
     script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js')
     script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js')

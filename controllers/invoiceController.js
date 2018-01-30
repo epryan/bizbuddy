@@ -123,7 +123,16 @@ exports.invoice_create_post = [
             if (err) { return next(err); }
             // On success, render the invoice_form
             // TODO: render if db not connected?
-            res.render('invoice_form', {title: 'Create invoice', invoice: invoice, business_list: list_businesses, errors: errors.array()});
+            res.render(
+              'invoice_form',
+              {
+                title: 'Create invoice',
+                invoice: invoice,
+                business_list: list_businesses,
+                billables: billableArray,
+                errors: errors.array()
+              }
+            );
           });
         return;
       }

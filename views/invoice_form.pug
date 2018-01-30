@@ -1,36 +1,21 @@
 extends layout
 
 mixin billable(div_id, isVisible)
-  if isVisible
-    div(id=div_id)
-      div.col-sm-4.form-group
-        label(for= div_id + '_description') Description:
-        input.form-control(type= 'text' name= 'description' id= div_id + '_description')
-      div.col-sm-2.form-group
-        label(for= div_id + '_quantity') Quantity:
-        input.form-control(type= 'number' name= 'quantity' min= '1.0' step='1.0' id= div_id + '_quantity' onchange="truncateAmount(this)")
-      div.col-sm-2.form-group
-        label(for= div_id + '_unit_price') Unit Price:
-        input.form-control(type= 'number' name= 'unit_price' min= '1.0' step='1.0' id= div_id + '_unit_price' onchange="truncateAmount(this)")
-      div.col-sm-2.form-group
-        label(for= div_id + '_total_price') Total Price:
-        //input.form-control(type= 'text' name= 'total_price' id= div_id + '_total_price' readonly)
-        input.form-control(type= 'text' name= 'total_price' id= div_id + '_total_price' onchange="truncateAmount(this)")
-  else
-    div(id=div_id hidden)
-      div.col-sm-4.form-group
-        label(for= div_id + '_description') Description:
-        input.form-control(type= 'text' name= 'description' id= div_id + '_description')
-      div.col-sm-2.form-group
-        label(for= div_id + '_quantity') Quantity:
-        input.form-control(type= 'text' name= 'quantity' min= '1.0' step='1.0' id= div_id + '_quantity' onchange="truncateAmount(this)")
-      div.col-sm-2.form-group
-        label(for= div_id + '_unit_price') Unit Price:
-        input.form-control(type= 'text' name= 'unit_price' min= '1.0' step='1.0' id= div_id + '_unit_price' onchange="truncateAmount(this)")
-      div.col-sm-2.form-group
-        label(for= div_id + '_total_price') Total Price:
-        //input.form-control(type= 'text' name= 'total_price' id= div_id + '_total_price' readonly)
-        input.form-control(type= 'text' name= 'total_price' id= div_id + '_total_price' onchange="truncateAmount(this)")
+  //- When isVisible===true, hidden=false else hidden='hidden'
+  div(id=div_id hidden=(true===isVisible ? false : 'hidden'))
+    div.col-sm-4.form-group
+      label(for= 'description') Description:
+      input.form-control(type= 'text' name= 'description' placeholder= 'Base Install')
+    div.col-sm-2.form-group
+      label(for= 'quantity') Quantity:
+      input.form-control(type= 'number' name= 'quantity' placeholder= '120.0' min= '120' step='120' onchange="truncateAndUpdateTotal(this)")
+    div.col-sm-2.form-group
+      label(for= 'unit_price') Unit Price:
+      input.form-control(type= 'number' name= 'unit_price' placeholder= '0.50' min= '0.5' step='0.05' onchange="truncateAndUpdateTotal(this)")
+    div.col-sm-2.form-group
+      label(for= 'total_price') Total Price:
+      //- input.form-control(type= 'text' name= 'total_price' id= div_id + '_total_price' readonly)
+      input.form-control(type= 'text' name= 'total_price' placeholder= '60.00' onchange="truncateAmount(this)")
 
 block content
   script(src='/javascripts/invoice_form.js')
@@ -42,17 +27,17 @@ block content
     div.form-group
       label(for='bill_to') Invoice to:
       select#bill_to.form-control(type='select', placeholder='Select a business', name='bill_to')
-        //Did we get passed a list for the billing dropdowns?
+        //- Did we get passed a list for the billing dropdowns?
         if business_list
           for business in business_list
             option(value= business.legal_name) #{business.legal_name}
-            //Was the business supplied a nickname upon creation?
-            //**creates sorting difficulties when not all biz have nickname in db
-            //if business.nickname
-            //  option(value= business.id) #{business.nickname}
-            //else
-            //  option(value= business.id) #{business.legal_name}
-        //Default option to allow the user to create a business on the fly inside of invoices
+            //- Was the business supplied a nickname upon creation?
+            //- **creates sorting difficulties when not all biz have nickname in db
+            //- if business.nickname
+            //-   option(value= business.id) #{business.nickname}
+            //- else
+            //-   option(value= business.id) #{business.legal_name}
+        //- Default option to allow the user to create a business on the fly inside of invoices
         option(value='new' disabled) Need more? Create New Biz First!
 
     div.form-group
@@ -90,10 +75,10 @@ block content
 
     hr
 
-    //button.btn.btn-primary(type='submit') Submit
+    //- button.btn.btn-primary(type='submit') Submit
     button.btn.btn-primary(type='button' onClick='validateForm()') Submit
 
-    // Hidden POST variables
+    //- Hidden POST variables
     input#invoice_price.form-control(type='hidden', name='invoice_price', value=(undefined===invoice_price ? 0 : invoice_price))
 
     if errors
