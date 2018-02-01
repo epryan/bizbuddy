@@ -4,6 +4,10 @@ mixin sidebar-button(link, name)
   li
     a.btn.btn-primary.sidebar-btn(href= link) #{name}
 
+mixin nav-item(link, name)
+  li(role=presentation)
+    a(href= link) #{name}
+    
 doctype html
 html(lang='en')
   head
@@ -14,14 +18,11 @@ html(lang='en')
     meta(author= 'Ryan Erickson (ryan@ryansip.com)')
 
     link(rel='stylesheet', href='/stylesheets/style.css')
-    //- link(rel='stylesheet', href='/stylesheets/narrow-jumbotron.css')
     link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css')
-    script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js')
-    script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js')
-
+    link(rel='stylesheet', href='/stylesheets/jumbotron-narrow.css')
 
   body.bg-info
-    div(class='container-fluid')
+    div(class='container')
       div(class='header clearfix')
         nav
           ul(class='nav nav-pills pull-right')
@@ -32,16 +33,18 @@ html(lang='en')
             li(role='presentation')
               a(href='') Contact
         h3(class='text-muted') Base By Dottie
-
-      div(class='row')
-        div(class='col-sm-2')
-          ul(class='sidebar-nav')
-            +sidebar-button('/invoicing', 'Invoicing')
-            +sidebar-button('/invoicing/invoices', 'All invoices')
-            +sidebar-button('/invoicing/businesses', 'All businesses')
-            hr
-            +sidebar-button('/invoicing/invoice/create', 'Create new invoice')
-            +sidebar-button('/invoicing/business/create', 'Create new business')
+        
+      div(class='header clearfix')
+        nav
+          ul(class='nav nav-pills')
+            +nav-item('/invoicing', 'Invoicing')
+            +nav-item('/invoicing/invoices', 'All invoices')
+            +nav-item('/invoicing/businesses', 'All businesses')
+            +nav-item('/invoicing/invoice/create', 'New invoice')
+            +nav-item('/invoicing/business/create', 'New business')
 
         div(class='col-sm-10')
           block content
+            
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js')
+    script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js')
