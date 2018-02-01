@@ -18,7 +18,7 @@ exports.index = function(req, res) {
       Business.count(callback);
     },
   }, function(err, results) {
-    res.render('invoicing', { title: 'Invoices', error: err, data: results});
+    res.render('invoicing', { title: 'Invoicing', error: err, data: results});
   });
 }
 
@@ -29,7 +29,7 @@ exports.invoice_list = function(req, res) {
   .exec(function (err, list_invoices) {
     if (err) { return next(err); }
     // on success, render
-    res.render('invoice_list', {title: 'Invoice List', invoice_list: list_invoices});
+    res.render('invoice_list', {title: 'All Invoices', invoice_list: list_invoices});
   })
 }
 

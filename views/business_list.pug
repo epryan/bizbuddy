@@ -1,18 +1,20 @@
 extends layout
 
 block content
-  h1= title
+  div(class='text-center')
+    h1= title
 
-  for business in business_list
-    if business.nickname
-      p= business.legal_name + ' ( ' + business.nickname + ' ) '
-    else
-      p= business.legal_name
+    for business in business_list
+      if business.nickname
+        - var nameString= business.legal_name + ' ( ' + business.nickname + ' ) '
+        p #[strong #{nameString}]
+      else
+        p= business.legal_name
 
-    p= business.address_line_1
-    p= business.address_line_2
+      p= business.address_line_1
+      p= business.address_line_2
 
-    if business.contact_number
-      p= business.contact_number
+      if business.contact_number
+        p= business.contact_number
 
-    hr
+      //hr

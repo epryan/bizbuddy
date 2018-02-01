@@ -1,10 +1,12 @@
 extends layout
 
 block content
-  h1 #{title}
+  div.text-center
+    h1 #{title}
+    hr
 
   div.row
-    div.col-6
+    div.col-xs-12
       form(method='post' action='')
         div.form-group
           label(for='legal_name') Legal Name:
@@ -25,10 +27,9 @@ block content
         div.form-group
           label(for='contact_name') Contact Number:
           input#contact_number.form-control(type='tel', placeholder='(123)455-4321', name='tel' value=(undefined===business ? '' : business.contact_number))
-
-          hr
-
-          button.btn.btn-primary(type='submit') Submit
+        
+        div.text-center
+          button.btn.btn-primary.btn-full-width(type='submit') Submit
 
         if errors
           ul

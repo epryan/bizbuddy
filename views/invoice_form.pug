@@ -3,7 +3,7 @@ extends layout
 mixin billable(div_id, isVisible)
   //- When isVisible===true, hidden=false else hidden='hidden'
   div(id=div_id hidden=(true===isVisible ? false : 'hidden'))
-    div.col-sm-4.form-group
+    div.col-sm-6.form-group
       label(for= 'description') Description:
       input.form-control(type= 'text' name= 'description' placeholder= 'Base Install')
     div.col-sm-2.form-group
@@ -16,6 +16,7 @@ mixin billable(div_id, isVisible)
       label(for= 'total_price') Total Price:
       //- input.form-control(type= 'text' name= 'total_price' id= div_id + '_total_price' readonly)
       input.form-control(type= 'text' name= 'total_price' placeholder= '60.00' onchange="truncateAmount(this)")
+    hr
 
 block content
   script(src='/javascripts/invoice_form.js')
@@ -59,13 +60,16 @@ block content
     hr
 
     div.row
-      h3.text-center !{'<u>Billing Items</u>'}
-      +billable('billable_0', true)
-      - var i = 1;
+      h3.text-center #[u Billing Items]
+      - var i = 0;
       while i < 5
-        +billable('billable_' + i++, false)
+        if i == 0
+          +billable('billable_' + i++, true)
+        else
+          +billable('billable_' + i++, false)
 
-    button.btn.btn-primary(type='button' onClick='showNextBillable()') More Work
+    div.text-center
+      button.btn.btn-primary.btn-half-width(type='button' onClick='showNextBillable()') More Work
 
     hr
 
@@ -73,10 +77,10 @@ block content
       label(for='notes') Notes:
       input#notes.form-control(type='text', placeholder='That job was wack!', name='notes' value=(undefined===invoice ? '' : invoice.notes))
 
-    hr
 
-    //- button.btn.btn-primary(type='submit') Submit
-    button.btn.btn-primary(type='button' onClick='validateForm()') Submit
+    div.text-center
+      //- button.btn.btn-primary(type='submit') Submit
+      button.btn.btn-primary.btn-full-width(type='button' onClick='validateForm()') Submit
 
     //- Hidden POST variables
     input#invoice_price.form-control(type='hidden', name='invoice_price', value=(undefined===invoice_price ? 0 : invoice_price))

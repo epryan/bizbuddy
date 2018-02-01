@@ -1,7 +1,8 @@
 extends layout
 
 block content
-  h1= title
+  div(class='text-center')
+    h1= title
 
   ul
   each invoice in invoice_list
@@ -10,4 +11,4 @@ block content
       | (#{invoice.project_name})
 
   else
-    li There are no invoices!
+    p(class='text-center') There are no invoices yet! 

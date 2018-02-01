@@ -37,7 +37,7 @@ exports.business_detail = function(req, res) {
 
 //GET version of business creation for initial empty form
 exports.business_create_get = function(req, res) {
-  res.render('business_form', {title: 'Create business'});
+  res.render('business_form', {title: 'New Business'});
 };
 
 //POST version of business creation for form submission and error handling
