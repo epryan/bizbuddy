@@ -25,7 +25,7 @@ html(lang='en')
         div.row
           div.col-xs-8
             h1 Invoice
-            h4.text-muted= 'NO: ' + invoice.invoice_number + ' | Date: ' + invoice.billing_date
+            h4.text-muted= 'NO: ' + invoice.invoice_number + ' | Date: ' + invoice.invoice_date_formatted
 
           div.col-xs-4
             div.media
@@ -34,39 +34,13 @@ html(lang='en')
 
               // Custom Base By Dottie Logo (no db linkage)
               ul.media-body.list-unstyled
-                li !{'<b>Base By Dottie</b>'}
+                li !{'<b>Base By Dottie LLC</b>'}
                 li= 'Commercial Flooring & Finish'
-                li= 'Bellevue, WA 98007'
-                li= 'dottie@basebydottie.com'
+                li= '2700 156TH AVE SE'
+                li= 'BELLEVUE, WA 98007'
 
       div.invoice-body
         div.row
-          div.col-xs-6
-            div.panel.panel-default
-              div.panel-heading
-                h3.panel-title= 'Company Details'
-              div.panel-body
-                dl.dl-horizontal
-                  dt= 'Name'
-                  // TODO: boldface biz name
-                  dd= business_from.legal_name
-
-                  dt= 'Address'
-                  dd= business_from.address_line_1
-                  dd= business_from.address_line_2
-
-                  if business_from.contact_number
-                    dt= 'Phone'
-                    dd= business_from.contact_number
-
-                  if business_from.email
-                    dt= 'Email'
-                    dd= business_from.email
-
-                  if business_from.tax_id
-                    dt= 'Tax NO'
-                    dd= business_from.tax_id
-
           div.col-xs-6
             div.panel.panel-default
               div.panel-heading
@@ -74,8 +48,8 @@ html(lang='en')
               div.panel-body
                 dl.dl-horizontal
                   dt= 'Name'
-                  // TODO: boldface biz name
-                  dd= business_to.legal_name
+                  dd
+                    b= business_to.legal_name
 
                   dt= 'Address'
                   dd= business_to.address_line_1
@@ -92,6 +66,25 @@ html(lang='en')
                     dd= business_to.email
                   else
                     br
+
+          div.col-xs-6
+            div.panel.panel-default
+              div.panel-heading
+                h3.panel-title= 'Project Details'
+              div.panel-body
+                dl.dl-horizontal        
+                  dt= 'Name'
+                  dd= invoice.project_name
+                  
+                  dt= 'Address'
+                  dd= invoice.project_address_line_1
+                  dd= invoice.project_address_line_2
+                  
+                  dt= 'Job NO.'
+                  dd= invoice.project_number
+
+                  dt= 'Completed'
+                  dd= invoice.project_date_formatted
 
         div.panel.panel-default
           div.panel-heading
@@ -115,7 +108,7 @@ html(lang='en')
                 td.text-center.col-xs-1= 'Total Cost'
             tbody
               tr
-                th.text-center.rowtotal.mono= '$' + invoice_price
+                th.text-center.rowtotal.mono= '$' + invoice.invoice_total
 
         div.row
           div.col-xs-7
@@ -126,13 +119,19 @@ html(lang='en')
                 if invoice.notes
                   p= invoice.notes
 
-          div.col-xs-5
+          div.col-xs-5.text-center
             div.panel.panel-default
               div.panel-heading
-                h3.panel-title= 'Job Description'
+                h3.panel-title= 'Questions? Contact me!'
               div.panel-body
-                  p= invoice.project_name
-                  p= invoice.project_address
+                p
+                  b Dottie Gibbs
+                p= '(425) 229-2480'
+                p= 'dottie@basebydottie.com'
+                //- dd= invoice.project_number
+                //- dd= invoice.project_name
+                //- dd= invoice.project_address
 
       div.invoice-footer
-        p= 'Thanks!'
+        p= 'Please make all checks payable to Base By Dottie LLC.'
+        p= 'Thank you for your business!'

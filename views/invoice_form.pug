@@ -3,19 +3,18 @@ extends layout
 mixin billable(div_id, isVisible)
   //- When isVisible===true, hidden=false else hidden='hidden'
   div(id=div_id hidden=(true===isVisible ? false : 'hidden'))
-    div.col-sm-6.form-group
-      label(for= 'description') Description:
+    div.col-xs-12.col-sm-6.form-group
+      label(for= 'description') Description
       input.form-control(type= 'text' name= 'description' placeholder= 'Base Install')
-    div.col-sm-2.form-group
-      label(for= 'quantity') Quantity:
+    div.col-xs-6.col-sm-2.form-group
+      label(for= 'quantity') Quantity
       input.form-control(type= 'number' name= 'quantity' placeholder= '120.0' min= '120' step='120' onchange="truncateAndUpdateTotal(this)")
-    div.col-sm-2.form-group
-      label(for= 'unit_price') Unit Price:
+    div.col-xs-6.col-sm-2.form-group
+      label(for= 'unit_price') Unit Price
       input.form-control(type= 'number' name= 'unit_price' placeholder= '0.50' min= '0.5' step='0.05' onchange="truncateAndUpdateTotal(this)")
-    div.col-sm-2.form-group
-      label(for= 'total_price') Total Price:
-      //- input.form-control(type= 'text' name= 'total_price' id= div_id + '_total_price' readonly)
-      input.form-control(type= 'text' name= 'total_price' placeholder= '60.00' onchange="truncateAmount(this)")
+    div.col-xs-12.col-sm-2.form-group
+      label(for= 'total_price') Total Price
+      input.form-control(type= 'text' name= 'total_price' placeholder= '60.00' onchange="truncateAmount(this)" readonly)
     hr
 
 block content
@@ -24,43 +23,64 @@ block content
   h1.text-center #{title}
 
   form(action='' method='post' id="form_invoice")
-    h3.text-center !{'<u>Business Info</u>'}
-    div.form-group
-      label(for='bill_to') Invoice to:
-      select#bill_to.form-control(type='select', placeholder='Select a business', name='bill_to')
-        //- Did we get passed a list for the billing dropdowns?
-        if business_list
-          for business in business_list
-            option(value= business.legal_name) #{business.legal_name}
-            //- Was the business supplied a nickname upon creation?
-            //- **creates sorting difficulties when not all biz have nickname in db
-            //- if business.nickname
-            //-   option(value= business.id) #{business.nickname}
-            //- else
-            //-   option(value= business.id) #{business.legal_name}
-        //- Default option to allow the user to create a business on the fly inside of invoices
-        option(value='new' disabled) Need more? Create New Biz First!
+    h3.text-center
+      b Business Info
+    
+    //- Always enforce side by side Date/Business 
+    div.row
+      div.form-group.col-md-6
+        label(for='invoice_date') Billing Date
+        input#invoice_date.form-control(type='date', placeholder='01/01/2018', name='invoice_date' value=(undefined===invoice ? '' : invoice.invoice_date))
+      div.form-group.col-md-6
+        label(for='bill_to') Invoice to
+        select#bill_to.form-control(type='select', placeholder='Select a business', name='bill_to')
+          //- Did we get passed a list for the billing dropdowns?
+          if business_list
+            for business in business_list
+              option(value= business.legal_name) #{business.legal_name}
+          //- Default option to allow the user to create a business on the fly inside of invoices
+          option(value='new' disabled) Need more? Create New Biz First!
+    hr
+      
+    h3.text-center
+      b Project Info
+    
+    //- Always enforce side by side Date/Number
+    div.row
+      div.form-group.col-xs-6
+        label(for='project_date') Project Date
+        input#project_date.form-control(type='date', placeholder='01/01/2018', name='project_date' value=(undefined===invoice ? '' : invoice.project_date))
+              
+      div.form-group.col-xs-6
+        label(for='project_number') Project Number
+        input#project_number.form-control(type='text', placeholder='8675309', name='project_number' value=(undefined===invoice ? '' : invoice.project_number))
 
     div.form-group
-      label(for='invoice_date') Billing Date:
-      input#invoice_date.form-control(type='date', placeholder='01/01/2018', name='invoice_date' value=(undefined===invoice ? '' : invoice.invoice_date))
-
-    div.form-group
-      label(for='job_number') Job Number (WO, PO, etc):
-      input#job_number.form-control(type='text', placeholder='8675309', name='job_number' value=(undefined===invoice ? '' : invoice.job_number))
-
-    div.form-group
-      label(for='project_name') Project Name:
+      label(for='project_name') Project Name
       input#project_name.form-control(type='text', placeholder='Anything but Facebook!', name='project_name' value=(undefined===invoice ? '' : invoice.project_name))
 
-    div.form-group
-      label(for='project_address') Project Address:
-      input#project_address.form-control(type='text', placeholder='Street City, WA Zip', name='project_address' value=(undefined===invoice ? '' : invoice.project_address))
-
+    //- Project Address
+    //- Small+: 2*2 Grid, >Small: Only state/Zip inline
+    div.row
+      div.form-group.col-xs-12.col-sm-6
+        label(for='project_street') Street Address
+        input#project_street.form-control(type='text', placeholder='Street Address', name='project_street' value=(undefined===invoice ? '' : invoice.project_street))
+      div.form-group.col-xs-12.col-sm-6
+        label(for='project_city') City
+        input#project_city.form-control(type='text', placeholder='City', name='project_city' value=(undefined===invoice ? '' : invoice.project_city))
+    div.row  
+      div.form-group.col-xs-6.col-sm-6
+        label(for='project_state') State
+        input#project_state.form-control(type='text', placeholder='State', name='project_state' value=(undefined===invoice ? '' : invoice.project_state))
+      div.form-group.col-xs-6.col-sm-6
+        label(for='project_zip') Zip
+        input#project_zip.form-control(type='number', placeholder='Zip Code', name='project_zip' value=(undefined===invoice ? '' : invoice.project_zip))
     hr
 
     div.row
-      h3.text-center #[u Billing Items]
+      h3.text-center
+        b Billing Items
+        
       - var i = 0;
       while i < 5
         if i == 0
@@ -74,16 +94,15 @@ block content
     hr
 
     div.form-group
-      label(for='notes') Notes:
+      label(for='notes') Notes
       input#notes.form-control(type='text', placeholder='That job was wack!', name='notes' value=(undefined===invoice ? '' : invoice.notes))
 
 
     div.text-center
-      //- button.btn.btn-primary(type='submit') Submit
       button.btn.btn-primary.btn-full-width(type='button' onClick='validateForm()') Submit
 
     //- Hidden POST variables
-    input#invoice_price.form-control(type='hidden', name='invoice_price', value=(undefined===invoice_price ? 0 : invoice_price))
+    input#invoice_total.form-control(type='hidden', name='invoice_total', value=(undefined===invoice ? 0 : invoice.invoice_total))
 
     if errors
       ul

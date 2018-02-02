@@ -39,7 +39,7 @@ function truncateAndUpdateTotal(elem) {
 // Sum the subtotals in a hidden element and post the form
 function validateForm() {
 
-  // Collect the subtotals and store them in the hidden invoice_price element
+  // Collect the subtotals and store them in the hidden invoice_total element
   var subTotals = document.getElementById("form_invoice").elements['total_price'];
   var total = 0;
 
@@ -49,7 +49,7 @@ function validateForm() {
     }
   }
 
-  document.getElementById("invoice_price").value = total;
+  document.getElementById("invoice_total").value = total;
 
   // POST the form to the server
   document.getElementById("form_invoice").submit();
