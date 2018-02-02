@@ -32,12 +32,13 @@ html(lang='en')
               div.media-left
                 img.media-object.logo(src='/images/dots.png')
 
-              // Custom Base By Dottie Logo (no db linkage)
+              //- Company-From Logo
               ul.media-body.list-unstyled
-                li !{'<b>Base By Dottie LLC</b>'}
+                li 
+                  b= business_from.legal_name
                 li= 'Commercial Flooring & Finish'
-                li= '2700 156TH AVE SE'
-                li= 'BELLEVUE, WA 98007'
+                li= business_from.address_line_1
+                li= business_from.address_line_2
 
       div.invoice-body
         div.row
