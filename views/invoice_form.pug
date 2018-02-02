@@ -42,12 +42,12 @@ block content
         option(value='new' disabled) Need more? Create New Biz First!
 
     div.form-group
-      label(for='billing_date') Billing Date:
-      input#billing_date.form-control(type='date', placeholder='01/01/2018', name='billing_date' value=(undefined===invoice ? '' : invoice.billing_date))
+      label(for='invoice_date') Billing Date:
+      input#invoice_date.form-control(type='date', placeholder='01/01/2018', name='invoice_date' value=(undefined===invoice ? '' : invoice.invoice_date))
 
     div.form-group
-      label(for='invoice_number') Invoice Number:
-      input#invoice_number.form-control(type='text', placeholder='8675309', name='invoice_number' value=(undefined===invoice ? '' : invoice.invoice_number))
+      label(for='job_number') Job Number (WO, PO, etc):
+      input#job_number.form-control(type='text', placeholder='8675309', name='job_number' value=(undefined===invoice ? '' : invoice.job_number))
 
     div.form-group
       label(for='project_name') Project Name:

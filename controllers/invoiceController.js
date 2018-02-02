@@ -54,7 +54,7 @@ exports.invoice_create_get = function(req, res) {
 // Can be run in place of stringing body() calls, though it isnt especially useful right now
 // function errorChecker() {
 //   var status = [];
-//   status.push(body('billing_date', 'Billing date required').isLength({ min: 1 }).trim());
+//   status.push(body('invoice_date', 'Billing date required').isLength({ min: 1 }).trim());
 //   status.push(body('invoice_number', 'Invoice number required').isLength({ min: 1 }).trim());
 //   return status;
 // }
@@ -66,14 +66,14 @@ exports.invoice_create_post = [
   // options: async.paralell, double nesting calls, something else?
 
     //Validate that the form fields are non null
-    body('billing_date', 'Billing date required').isLength({ min: 1 }).trim(),
-    body('invoice_number', 'Invoice number required').isLength({ min: 1 }).trim(),
+    body('invoice_date', 'Billing date required').isLength({ min: 1 }).trim(),
+    body('job_number', 'Job number required').isLength({ min: 1 }).trim(),
     body('project_name', 'Project name required').isLength({ min: 1 }).trim(),
     body('project_address', 'Project address required').isLength({ min: 1 }).trim(),
 
     //Sanitize (trim/escape) the fields
-    //sanitizeBody('billing_date').trim().escape(),
-    sanitizeBody('invoice_number').trim().escape(),
+    //sanitizeBody('invoice_date').trim().escape(),
+    sanitizeBody('job_number').trim().escape(),
     sanitizeBody('project_name').trim().escape(),
     sanitizeBody('project_address').trim().escape(),
     sanitizeBody('notes').trim().escape(),
@@ -108,8 +108,9 @@ exports.invoice_create_post = [
 
       //Create the object with sanitized data
       var invoice = new Invoice({
-        billing_date: req.body.billing_date,
-        invoice_number: req.body.invoice_number,
+        invoice_number: '20180001',
+        invoice_date: req.body.invoice_date,
+        job_number: req.body.job_number,
         project_name: req.body.project_name,
         project_address: req.body.project_address,
         notes: req.body.notes
@@ -139,7 +140,7 @@ exports.invoice_create_post = [
 
       else {
         //No errors present, determine if duplicate
-        Invoice.findOne({'invoice_number': req.body.invoice_number, 'project_name': req.body.project_name})
+        Invoice.findOne({'invoice_number': req.body.invoice_number})
           .exec( function(err, found_invoice) {
             console.log('querying invoice collection for duplicate invoice')
             if (err) { return next(err); }
