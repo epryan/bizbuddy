@@ -1,6 +1,6 @@
-# MEANBase ie. BaseByDottie.com
+# MEANBase aka BizBuddy
 
-## A MEAN stack homepage and invoicing application under development for BaseByDottie
+## A MEAN stack homepage and invoicing application developed for BaseByDottie
 
 * **Usage**
   - Clone the repo
