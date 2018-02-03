@@ -1,7 +1,6 @@
 /*
  * meanbase - A MEAN stack homepage and invoicing application for basebydottie.com
  * Author: Ryan Erickson (ryan@ryansip.com)
- * Current phase: A working prototype nearing backend completion
  */
 
 var express = require('express');
