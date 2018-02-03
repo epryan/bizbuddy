@@ -29,8 +29,8 @@ mongoose.Promise = global.Promise;
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-app.use('compression'); // Compress all routes
-app.use('helmet'); // Basic vulnerability mitigation
+app.use('compression()'); // Compress all routes
+app.use('helmet()'); // Basic vulnerability mitigation
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
