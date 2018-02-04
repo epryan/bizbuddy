@@ -15,3 +15,13 @@
 .btn-half-width {
   width: 50%
 }
+
+.bg-tile {
+  background: url("/images/tile.jpg");
+  background-repeat: repeat;
+  background-position: center;
+}
+
+.bg-well{
+  background: rgba(255, 255, 255, 0.8);
+}

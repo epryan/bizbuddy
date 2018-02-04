@@ -11,12 +11,13 @@ html(lang='en')
     meta(description= 'The homepage of www.basebydottie.com')
     meta(author= 'Ryan Erickson (ryan@ryansip.com)')
 
-    link(rel='stylesheet', href='/stylesheets/style.css')
+    
     link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css')
     link(rel='stylesheet', href='/stylesheets/jumbotron-narrow.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
 
-  body(style='background: url("/images/tile.jpg"); background-repeat: true')
-    div(class='container well')
+  body.text-info.bg-tile
+    div.bg-well(class='container well')
       
       //- NAVBAR
       nav.navbar.navbar-default
