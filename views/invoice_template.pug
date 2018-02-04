@@ -1,5 +1,5 @@
-// This pug template is adapted from Christos Georgiou's work located at: https://codepen.io/ChristosGeorgiou/pen/WrwxgM
-// Potentially use 3.3.5 vs 3.3.7: maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css
+// This page is adapted from Christos Georgiou's work located at: https://codepen.io/ChristosGeorgiou/pen/WrwxgM
+//- Potentially use 3.3.5 vs 3.3.7: maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css
 
 mixin billable_row(billable_item)
   tr
@@ -23,23 +23,37 @@ html(lang='en')
     div.container.invoice
       div.invoice-header
         div.row
-          div.col-xs-8
+          div.col-xs-7
             h1 Invoice
             h4.text-muted= 'NO: ' + invoice.invoice_number + ' | Date: ' + invoice.invoice_date_formatted
+          
+          div.col-xs-2.text-right
+            img.logo(src='/images/dots-circle.png' alt='Base By Dottie Logo')
 
-          div.col-xs-4
-            div.media
-              div.media-left
-                img.media-object.logo(src='/images/dots.png')
+          div.col-xs-3
+            //- Company-From Logo
+            ul.list-unstyled
+              li 
+                b= business_from.legal_name
+              li= 'Commercial Flooring & Finish'
+              li= business_from.address_line_1
+              li= business_from.address_line_2
+          //- The following setup does not allow the image to print due to the
+          //- browsers handling of the media css class
+          //- div.col-xs-4
+          //-   div.media
+          //-     div.media-left
+          //-       img.media-object.logo(src='/images/tile.jpg' alt='Base By Dottie Logo')
+          //- 
+          //-     //- Company-From Logo
+          //-     ul.media-body.list-unstyled
+          //-       li 
+          //-         b= business_from.legal_name
+          //-       li= 'Commercial Flooring & Finish'
+          //-       li= business_from.address_line_1
+          //-       li= business_from.address_line_2
 
-              //- Company-From Logo
-              ul.media-body.list-unstyled
-                li 
-                  b= business_from.legal_name
-                li= 'Commercial Flooring & Finish'
-                li= business_from.address_line_1
-                li= business_from.address_line_2
-
+                
       div.invoice-body
         div.row
           div.col-xs-6
