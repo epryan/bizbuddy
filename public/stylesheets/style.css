@@ -19,7 +19,7 @@
 .bg-tile {
   background: url("/images/tile.jpg");
   background-repeat: repeat;
-  background-position: center;
+  background-position: center top;
 }
 
 .bg-well{
