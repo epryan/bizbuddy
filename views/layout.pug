@@ -1,3 +1,4 @@
+//- Syntactical sugar to beautify nav links
 mixin nav-item(link, name)
   li
     a(href= link) #{name}
@@ -10,18 +11,16 @@ html(lang='en')
     meta(name='viewport', content='width=device-width, initial-scale=1')
     meta(description= 'Carpet and base for your commercial space! BaseByDottie has highly experienced contractors who have done exceptional work for the Greater Seattle Area. Come check us out!')
     meta(author= 'Ryan Erickson (ryan@ryansip.com)')
-
-    
     link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css')
     link(rel='stylesheet', href='/stylesheets/jumbotron-narrow.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
 
   body.text-info.bg-tile
     div.bg-well(class='container well')
-      
       //- NAVBAR
       nav.navbar.navbar-default
         div.container-fluid
+          //- NAV-HEADER
           div.navbar-header
             button.navbar-toggle.collapsed(type='button' data-toggle='collapse' data-target='#navbar')
               span.sr-only Toggle Navigation
@@ -29,6 +28,7 @@ html(lang='en')
               span.icon-bar
               span.icon-bar
             a.navbar-brand(href='/') Base By Dottie
+          //- NAV-BODY
           div#navbar.navbar-collapse.collapse
             ul(class='nav navbar-nav navbar-right')
               +nav-item('/', 'Home')
@@ -44,9 +44,9 @@ html(lang='en')
                   li.divider(role='separator')
                   li.dropdown-header Create..
                   +nav-item('/invoicing/invoice/create', 'New invoice')
-                  +nav-item('/invoicing/business/create', 'New business')
-
+                  +nav-item('/invoicing/business/create', 'New business')  
+      //- PAGE CONTENT
       block content
-        
+    
     script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js')
     script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js')
