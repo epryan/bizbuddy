@@ -3,7 +3,7 @@ var router = express.Router();
 
 //Require controller modules
 var invoice_controller = require('../controllers/invoiceController');
-var business_controller = require('../controllers/businessController');
+var customer_controller = require('../controllers/customerController');
 
 /// INVOICE ROUTES ///
 
@@ -26,22 +26,22 @@ router.get('/invoices', invoice_controller.invoice_list);
 
 /// BUSINESS ROUTES ///
 
-//GET request for create a new business to use in invoices
-router.get('/business/create', business_controller.business_create_get);
+//GET request for create a new customer to use in invoices
+router.get('/customer/create', customer_controller.customer_create_get);
 
-//POST request for create a new business to use in invoices
-router.post('/business/create', business_controller.business_create_post);
+//POST request for create a new customer to use in invoices
+router.post('/customer/create', customer_controller.customer_create_post);
 
-//GET request for business updates
-router.get('/business/:id/update', business_controller.business_update_get);
+//GET request for customer updates
+router.get('/customer/:id/update', customer_controller.customer_update_get);
 
-//POST request for business updates
-router.get('/business/:id/update', business_controller.business_update_post);
+//POST request for customer updates
+router.get('/customer/:id/update', customer_controller.customer_update_post);
 
-//GET request for a specific business
-router.get('/business/:id', business_controller.business_detail);
+//GET request for a specific customer
+router.get('/customer/:id', customer_controller.customer_detail);
 
-//GET request for a list of all businesses
-router.get('/businesses', business_controller.business_list);
+//GET request for a list of all customeres
+router.get('/customers', customer_controller.customer_list);
 
 module.exports = router;

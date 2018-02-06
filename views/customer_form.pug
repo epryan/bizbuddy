@@ -1,0 +1,47 @@
+extends layout
+
+block content
+  div.text-center
+    h1 #{title}
+    hr
+
+  form(method='post' action='')
+    div.row
+      div.form-group.col-xs-12.col-sm-6
+        label(for='legal_name') Legal Name
+        input#legal_name.form-control(type='text', placeholder='Roberts Gourmet Burgers', name='legal_name' value=(undefined===customer ? '' : customer.legal_name))
+
+      div.form-group.col-xs-12.col-sm-6
+        label(for='nickname') Nickname
+        input#nickname.form-control(type='text', placeholder='Bobs Burgers', name='nickname' value=(undefined===customer ? '' : customer.nickname))
+
+    div.row
+      div.form-group.col-xs-12
+        label(for='address_line_1') Address
+        input#address_line_1.form-control(type='text', placeholder='99TH PL SE', name='address_line_1' value=(undefined===customer ? '' : customer.billing_street))
+    
+    div.row
+      div.form-group.col-xs-5
+        label(for='city') City
+        input#city.form-control(type='text', placeholder='City', name='city' value=(undefined===customer ? '' : customer.billing_city))
+          
+      div.form-group.col-xs-3
+        label(for='state') State
+        input#state.form-control(type='text', placeholder='State', name='state' value=(undefined===customer ? '' : customer.billing_state))
+      
+      div.form-group.col-xs-4
+        label(for='zip') Zip
+        input#zip.form-control(type='text', placeholder='Zip', name='zip' value=(undefined===customer ? '' : customer.billing_zip))
+
+    div.row
+      div.form-group.col-xs-12
+        label(for='phone') Contact Number
+        input#phone.form-control(type='tel', placeholder='(123)455-4321', name='phone' value=(undefined===customer ? '' : customer.contact_number))
+      
+    div.text-center
+      button.btn.btn-primary.btn-full-width(type='submit') Submit
+
+    if errors
+      ul
+        for error in errors
+          li!= error.msg

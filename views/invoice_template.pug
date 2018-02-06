@@ -34,10 +34,10 @@ html(lang='en')
             //- Company-From Logo
             ul.list-unstyled
               li 
-                b= business_from.legal_name
-              li= 'Commercial Flooring & Finish'
-              li= business_from.address_line_1
-              li= business_from.address_line_2
+                b= user.legal_name
+              li= user.description
+              li= user.address_line_1
+              li= user.address_line_2
           //- The following setup does not allow the image to print due to the
           //- browsers handling of the media css class
           //- div.col-xs-4
@@ -48,10 +48,10 @@ html(lang='en')
           //-     //- Company-From Logo
           //-     ul.media-body.list-unstyled
           //-       li 
-          //-         b= business_from.legal_name
-          //-       li= 'Commercial Flooring & Finish'
-          //-       li= business_from.address_line_1
-          //-       li= business_from.address_line_2
+          //-         b= user.legal_name
+          //-       li= user.description
+          //-       li= user.address_line_1
+          //-       li= user.address_line_2
 
                 
       div.invoice-body
@@ -64,21 +64,21 @@ html(lang='en')
                 dl.dl-horizontal
                   dt= 'Name'
                   dd
-                    b= business_to.legal_name
+                    b= customer.legal_name
 
                   dt= 'Address'
-                  dd= business_to.address_line_1
-                  dd= business_to.address_line_2
+                  dd= customer.address_line_1
+                  dd= customer.address_line_2
 
-                  if business_to.contact_number
+                  if customer.contact_number
                     dt= 'Phone'
-                    dd= business_to.contact_number
+                    dd= customer.contact_number
                   else
                     br
 
-                  if business_to.email
+                  if customer.email
                     dt= 'Email'
-                    dd= business_to.email
+                    dd= customer.email
                   else
                     br
 

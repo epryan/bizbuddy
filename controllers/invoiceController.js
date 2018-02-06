@@ -1,5 +1,6 @@
 var Invoice = require('../models/invoice');
-var Business = require('../models/business');
+var Customer = require('../models/customer');
+var User = require('../models/user');
 var BillableItem = require('../models/billableitem');
 
 var async = require('async');
@@ -14,8 +15,8 @@ exports.index = function(req, res) {
     invoice_count: function(callback) {
       Invoice.count(callback);
     },
-    business_count: function(callback) {
-      Business.count(callback);
+    customer_count: function(callback) {
+      Customer.count(callback);
     },
   }, function(err, results) {
     res.render('invoicing', { title: 'Invoicing', error: err, data: results});
@@ -41,14 +42,37 @@ exports.invoice_detail = function(req, res) {
 //GET version of invoice creation for initial empty form
 exports.invoice_create_get = function(req, res) {
 
-  Business.find({'legal_name' : {$ne : 'Base By Dottie LLC'}})
-    .sort([['legal_name', 'ascending']])
-    .exec( function (err, list_businesses) {
-      if (err) { return next(err); }
-      // On success, render the invoice_form
-      // TODO: render if db not connected?
-      res.render('invoice_form', {title: 'New Invoice', business_list: list_businesses});
-    });
+  async.paralell(
+    newestInvoice: function(callback) {
+      Invoice.findOne()
+      .sort({'invoice_number': 'descending'})
+      .exec(callback);
+    },
+    allCustomers: function(callback) {
+      Customer.find()
+      .sort([['legal_name', 'ascending']])
+      .exec(callback);
+    },
+    function(err, results) {
+      // Generate an invoice number (default is '20180001')
+      var nextInvoiceNumber = '20180001';
+      if (results.newestInvoice) {
+        // determine next invoice number
+        nextInvoiceNumber = (parseInt(results.newestInvoice.invoice_number) + 1).toString();
+      }
+      // Render the form with preset invoice number and customer list
+      res.render('invoice_form', {title: 'New Invoice', invoice_number: nextInvoiceNumber, customer_list: results.allCustomers});
+    }
+  );
+
+  // Customer.find(/*{'legal_name' : {$ne : 'Base By Dottie LLC'}}*/)
+  //   .sort([['legal_name', 'ascending']])
+  //   .exec( function (err, list_customers) {
+  //     if (err) { return next(err); }
+  //     // On success, render the invoice_form
+  //     // TODO: render if db not connected?
+  //     res.render('invoice_form', {title: 'New Invoice', customer_list: list_customers});
+  //   });
 };
 
 // Can be run in place of stringing body() calls, though it isnt especially useful right now
@@ -67,7 +91,7 @@ function validateBillables() {
 //POST version of invoice creation for form submission and error handling
 exports.invoice_create_post = [
 
-  // Obtain the bill_to and bill_from from the database
+  // Obtain the customer and user from the database
   // options: async.paralell, double nesting calls, something else?
 
     //Validate that the form fields are non null
@@ -125,9 +149,9 @@ exports.invoice_create_post = [
 
       if (!errors.isEmpty()) {
         //Errors present, render again w/ sanitized values + error messages
-        Business.find({'legal_name' : {$ne : 'Base By Dottie LLC'}})
+        Customer.find(/*{'legal_name' : {$ne : 'Base By Dottie LLC'}}*/)
           .sort([['legal_name', 'ascending']])
-          .exec( function (err, list_businesses) {
+          .exec( function (err, list_customers) {
             if (err) { return next(err); }
             // On success, render the invoice_form
             // TODO: render if db not connected?
@@ -148,7 +172,7 @@ exports.invoice_create_post = [
                     invoice_total: invoiceTotal,
                     notes: req.body.notes
                   }),
-                business_list: list_businesses,
+                customer_list: list_customers,
                 billables: billableArray,
                 errors: errors.array()
               }
@@ -162,7 +186,7 @@ exports.invoice_create_post = [
         Invoice.findOne(
           // Duplicate invoice if the following match an existing invoice:
           {
-          'business_to': req.body.business_to,
+          'customer': req.body.customer,
           'invoice_date': req.body.invoice_date,
           'project_date': req.body.project_date,
           'project_number': req.body.project_number
@@ -178,14 +202,14 @@ exports.invoice_create_post = [
 
             else { // query db for biz needed and redirect to save/print page
               // query for req.body.select company
-              Business.findOne({'legal_name' : req.body.bill_to})
-                .exec( function (err, bill_to_business) {
+              Customer.findOne({'legal_name' : req.body.bill_to})
+                .exec( function (err, customer) {
                   if (err) { return next(err); }
                   // On success, grab the other needed business (temporary)
                   // TODO: render if db not connected?
 
-                  Business.findOne({'legal_name': 'Base By Dottie LLC'})
-                  .exec( function (err, bill_from_business) {
+                  User.findOne({'legal_name': 'Base By Dottie LLC'})
+                  .exec( function (err, user) {
                     if (err) { return next(err); }
 
                     // TODO: decide if i want to ask the user if they want to save first
@@ -196,8 +220,8 @@ exports.invoice_create_post = [
                     // On success, render the invoice_form
                     res.render('invoice_template',
                       {
-                        business_from: bill_from_business, // TODO: shove into invoice
-                        business_to: bill_to_business, // TODO: shove into invoice
+                        billing_user: user, // TODO: shove into invoice
+                        billing_customer: customer, // TODO: shove into invoice
                         billables: billableArray, // TODO: shove billables into invoice
                         invoice: new Invoice(
                           {

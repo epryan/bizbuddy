@@ -25,9 +25,9 @@ block content
 
   form(action='' method='post' id="form_invoice")
     h3.text-center
-      b Business Info
+      b Customer Info
     
-    //- Always enforce side by side Date/Business 
+    //- Always enforce side by side Date/Customer
     div.row
       div.form-group.col-md-6
         label(for='invoice_date') Billing Date
@@ -36,11 +36,11 @@ block content
         label(for='bill_to') Invoice to
         select#bill_to.form-control(type='select', name='bill_to')
           //- Did we get passed a list for the billing dropdowns?
-          if business_list
-            for business in business_list
-              option(value= business.legal_name) #{business.legal_name}
-          //- Default option to allow the user to create a business on the fly inside of invoices
-          option(value='new' disabled) Need more? Create New Biz First!
+          if customer_list
+            for customer in customer_list
+              option(value= customer.legal_name) #{customer.legal_name}
+          //- Help statement informing users how to create a new customer
+          option(value='new' disabled) Not here? Create a new customer first!
     hr
       
     h3.text-center

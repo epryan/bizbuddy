@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  h1= title
+
+  if customer.nickname
+    p= customer.legal_name + ' ( ' + customer.nickname + ' ) '
+  else
+    p= customer.legal_name
+
+  p= customer.address_line_1
+  p= customer.address_line_2
+
+  if customer.contact_number
+    p= customer.contact_number

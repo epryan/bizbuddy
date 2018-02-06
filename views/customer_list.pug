@@ -1,0 +1,20 @@
+extends layout
+
+block content
+  div(class='text-center')
+    h1= title
+
+    for customer in customer_list
+      if customer.nickname
+        - var nameString= customer.legal_name + ' ( ' + customer.nickname + ' ) '
+        p #[strong #{nameString}]
+      else
+        p= customer.legal_name
+
+      p= customer.address_line_1
+      p= customer.address_line_2
+
+      if customer.contact_number
+        p= customer.contact_number
+
+      //hr
