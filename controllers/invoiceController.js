@@ -24,7 +24,7 @@ exports.index = function(req, res) {
   }, function(err, results) {
     res.render('invoicing', { title: 'Invoicing', error: err, data: results});
   });
-}
+};
 
 //Display a list of all invoices
 exports.invoice_list = function(req, res) {
@@ -35,12 +35,12 @@ exports.invoice_list = function(req, res) {
     // on success, render
     res.render('invoice_list', {title: 'All Invoices', invoice_list: list_invoices});
   })
-}
+};
 
 //Display a specific invoice
 exports.invoice_detail = function(req, res) {
   res.send('#todo: Display invoice #' + req.params.id);
-}
+};
 
 //GET version of invoice creation for initial empty form
 exports.invoice_create_get = function(req, res) {
@@ -62,7 +62,6 @@ function validateBillables() {
 
 //POST version of invoice creation for form submission and error handling
 exports.invoice_create_post = [
-
     //Validate that the form fields are non null
     body('invoice_date', 'Billing date required').isLength({ min: 1 }).trim(),
     body('project_date', 'Project date required').isLength({ min: 1 }).trim(),
@@ -72,7 +71,6 @@ exports.invoice_create_post = [
     body('project_city', 'Project city required').isLength({ min: 1 }).trim(),
     body('project_state', 'Project state required').isLength({ min: 1 }).trim(),
     body('project_zip', 'Project zip required').isLength({ min: 1 }).trim(),
-
     //Sanitize (trim/escape) the fields
     //sanitizeBody('invoice_date').trim().escape(),
     //sanitizeBody('project_date').trim().escape(),
@@ -199,14 +197,14 @@ function renderInvoiceForm(req, res, validatedLocals) {
       User.findOne({'legal_name': 'Base By Dottie LLC'})
       .exec(callback);
     },
-    newestInvoice: function(callback) {
-      Invoice.findOne()
-      .sort({'invoice_number': 'descending'})
-      .exec(callback);
-    },
     allCustomers: function(callback) {
       Customer.find()
       .sort([['legal_name', 'ascending']])
+      .exec(callback);
+    },
+    newestInvoice: function(callback) {
+      Invoice.findOne()
+      .sort({'invoice_number': 'descending'})
       .exec(callback);
     }
   }, function(err, results) {
@@ -224,11 +222,11 @@ function renderInvoiceForm(req, res, validatedLocals) {
         res.render('invoice_form', locals);
       }
       else {
-        // Render the form with locals and validatedLocals
+        // Render the form with locals and validatedLocals + errors
         res.render('invoice_form', Object.assign(locals, validatedLocals));
       }
-
     });
 
-}
+};
+
 //ToDo: add update and delete handlers
