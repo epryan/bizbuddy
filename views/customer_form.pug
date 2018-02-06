@@ -8,7 +8,7 @@ block content
   form(method='post' action='')
     div.row
       div.form-group.col-xs-12.col-sm-6
-        label(for='legal_name') Legal Name
+        label(for='legal_name') Legal Name(*)
         input#legal_name.form-control(type='text', placeholder='Roberts Gourmet Burgers', name='legal_name' value=(undefined===customer ? '' : customer.legal_name))
 
       div.form-group.col-xs-12.col-sm-6
@@ -17,20 +17,20 @@ block content
 
     div.row
       div.form-group.col-xs-12
-        label(for='address_line_1') Address
+        label(for='address_line_1') Address(*)
         input#address_line_1.form-control(type='text', placeholder='99TH PL SE', name='address_line_1' value=(undefined===customer ? '' : customer.billing_street))
     
     div.row
       div.form-group.col-xs-5
-        label(for='city') City
+        label(for='city') City(*)
         input#city.form-control(type='text', placeholder='City', name='city' value=(undefined===customer ? '' : customer.billing_city))
           
       div.form-group.col-xs-3
-        label(for='state') State
+        label(for='state') State(*)
         input#state.form-control(type='text', placeholder='State', name='state' value=(undefined===customer ? '' : customer.billing_state))
       
       div.form-group.col-xs-4
-        label(for='zip') Zip
+        label(for='zip') Zip(*)
         input#zip.form-control(type='text', placeholder='Zip', name='zip' value=(undefined===customer ? '' : customer.billing_zip))
 
     div.row

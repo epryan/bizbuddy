@@ -46,13 +46,17 @@ exports.customer_create_post = [
   //Validate that the form fields are non null
   body('legal_name', 'Legal name required').isLength({ min: 1 }).trim(),
   body('address_line_1', 'Address required').isLength({ min: 1 }).trim(),
-  body('address_line_2', 'City, State Zip required').isLength({ min: 1 }).trim(),
+  body('city', 'City required').isLength({ min: 1 }).trim(),
+  body('state', 'State required').isLength({ min: 1 }).trim(),
+  body('zip', 'Zip required').isLength({ min: 1 }).trim(),
 
   //Sanitize (trim/escape) the legal name and potentially null nickname
   sanitizeBody('legal_name').trim().escape(),
   sanitizeBody('nickname').trim().escape(),
   sanitizeBody('address_line_1').trim().escape(),
-  sanitizeBody('address_line_2').trim().escape(),
+  sanitizeBody('city').trim().escape(),
+  sanitizeBody('state').trim().escape(),
+  sanitizeBody('zip').trim().escape(),
   sanitizeBody('contact_number').trim().escape(),
 
   //Process request
@@ -65,8 +69,10 @@ exports.customer_create_post = [
     var customer = new Customer({
       legal_name: req.body.legal_name,
       nickname: req.body.nickname,
-      address_line_1: req.body.address_line_1,
-      address_line_2: req.body.address_line_2,
+      billing_street: req.body.address_line_1,
+      billing_city: req.body.city,
+      billing_state: req.body.state,
+      billing_zip: req.body.zip,
       contact_number: req.body.contact_number
     });
 

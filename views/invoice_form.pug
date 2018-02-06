@@ -30,10 +30,10 @@ block content
     //- Always enforce side by side Date/Customer
     div.row
       div.form-group.col-md-6
-        label(for='invoice_date') Billing Date
+        label(for='invoice_date') Billing Date(*)
         input#invoice_date.form-control(type='date', name='invoice_date' value=(undefined===invoice ? '' : invoice.invoice_date))
       div.form-group.col-md-6
-        label(for='bill_to') Invoice to
+        label(for='bill_to') Invoice to(*)
         select#bill_to.form-control(type='select', name='bill_to')
           //- Did we get passed a list for the billing dropdowns?
           if customer_list
@@ -49,32 +49,32 @@ block content
     //- Always enforce side by side Date/Number
     div.row
       div.form-group.col-xs-6
-        label(for='project_date') Project Date
+        label(for='project_date') Project Date(*)
         input#project_date.form-control(type='date', name='project_date' value=(undefined===invoice ? '' : invoice.project_date))
               
       div.form-group.col-xs-6
-        label(for='project_number') Project Number
+        label(for='project_number') Project Number(*)
         input#project_number.form-control(type='text', placeholder='Project Number', name='project_number' value=(undefined===invoice ? '' : invoice.project_number))
 
     div.form-group
-      label(for='project_name') Project Name
+      label(for='project_name') Project Name(*)
       input#project_name.form-control(type='text', placeholder='Project Name', name='project_name' value=(undefined===invoice ? '' : invoice.project_name))
 
     //- Project Address
     div.row
       div.form-group.col-xs-12
-        label(for='project_street') Street Address
+        label(for='project_street') Street Address(*)
         input#project_street.form-control(type='text', placeholder='Street Address', name='project_street' value=(undefined===invoice ? '' : invoice.project_street))
               
     div.row       
       div.form-group.col-xs-5
-        label(for='project_city') City
+        label(for='project_city') City(*)
         input#project_city.form-control(type='text', placeholder='City', name='project_city' value=(undefined===invoice ? '' : invoice.project_city)) 
       div.form-group.col-xs-3
-        label(for='project_state') State
+        label(for='project_state') State(*)
         input#project_state.form-control(type='text', placeholder='State', name='project_state' value=(undefined===invoice ? '' : invoice.project_state))
       div.form-group.col-xs-4
-        label(for='project_zip') Zip
+        label(for='project_zip') Zip(*)
         input#project_zip.form-control(type='number', placeholder='Zip Code', name='project_zip' value=(undefined===invoice ? '' : invoice.project_zip))
     hr
 
