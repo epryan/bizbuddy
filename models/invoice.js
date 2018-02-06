@@ -6,9 +6,9 @@ var moment = require('moment');
 var Schema = mongoose.Schema;
 
 var InvoiceSchema = new Schema({
-  // 'Business' fields
-  business_from: {type: Schema.ObjectId, ref: 'Business'},
-  business_to: {type: Schema.ObjectId, ref: 'Business'},
+  // 'Business' fields TODO: dont use objectID since archival will degrade over time if data linked rather than directly input
+  billing_from: {type: Schema.ObjectId, ref: 'user'},
+  billing_to: {type: Schema.ObjectId, ref: 'customer'},
   // Invoice-specific fields
   invoice_number: {type: String, required: true, min: 1, max:50},
   invoice_date: {type: String, required: true},

@@ -27,6 +27,11 @@ block content
     h3.text-center
       b Customer Info
     
+    //- TODO: Unhide and place
+    div.form-group(hidden)
+      label(for='invoice_number')
+      input#invoice_number.form-control(type='string', name='invoice_number', value=(undefined===invoice ? invoice_number : invoice.invoice_number))
+        
     //- Always enforce side by side Date/Customer
     div.row
       div.form-group.col-md-6

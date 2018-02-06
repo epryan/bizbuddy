@@ -15,6 +15,9 @@ exports.index = function(req, res) {
     invoice_count: function(callback) {
       Invoice.count(callback);
     },
+    user_count: function(callback) {
+      User.count(callback);
+    },
     customer_count: function(callback) {
       Customer.count(callback);
     },
@@ -41,38 +44,7 @@ exports.invoice_detail = function(req, res) {
 
 //GET version of invoice creation for initial empty form
 exports.invoice_create_get = function(req, res) {
-
-  async.paralell(
-    newestInvoice: function(callback) {
-      Invoice.findOne()
-      .sort({'invoice_number': 'descending'})
-      .exec(callback);
-    },
-    allCustomers: function(callback) {
-      Customer.find()
-      .sort([['legal_name', 'ascending']])
-      .exec(callback);
-    },
-    function(err, results) {
-      // Generate an invoice number (default is '20180001')
-      var nextInvoiceNumber = '20180001';
-      if (results.newestInvoice) {
-        // determine next invoice number
-        nextInvoiceNumber = (parseInt(results.newestInvoice.invoice_number) + 1).toString();
-      }
-      // Render the form with preset invoice number and customer list
-      res.render('invoice_form', {title: 'New Invoice', invoice_number: nextInvoiceNumber, customer_list: results.allCustomers});
-    }
-  );
-
-  // Customer.find(/*{'legal_name' : {$ne : 'Base By Dottie LLC'}}*/)
-  //   .sort([['legal_name', 'ascending']])
-  //   .exec( function (err, list_customers) {
-  //     if (err) { return next(err); }
-  //     // On success, render the invoice_form
-  //     // TODO: render if db not connected?
-  //     res.render('invoice_form', {title: 'New Invoice', customer_list: list_customers});
-  //   });
+  renderInvoiceForm(req, res);
 };
 
 // Can be run in place of stringing body() calls, though it isnt especially useful right now
@@ -90,9 +62,6 @@ function validateBillables() {
 
 //POST version of invoice creation for form submission and error handling
 exports.invoice_create_post = [
-
-  // Obtain the customer and user from the database
-  // options: async.paralell, double nesting calls, something else?
 
     //Validate that the form fields are non null
     body('invoice_date', 'Billing date required').isLength({ min: 1 }).trim(),
@@ -145,123 +114,120 @@ exports.invoice_create_post = [
         }
       }
 
-      // Determine the next available invoice_number
+      var newInvoice = new Invoice({
+          invoice_number: req.body.invoice_number,
+          invoice_date: req.body.invoice_date,
+          project_date: req.body.project_date,
+          project_number: req.body.project_number,
+          project_name: req.body.project_name,
+          project_street: req.body.project_street,
+          project_city: req.body.project_city,
+          project_state: req.body.project_state,
+          project_zip: req.body.project_zip,
+          invoice_total: invoiceTotal,
+          notes: req.body.notes
+        });
 
+      var validatedLocals = {
+        invoice: newInvoice,
+        billables: billableArray
+      };
+
+      //Errors present, render again w/ sanitized values + error messages
       if (!errors.isEmpty()) {
-        //Errors present, render again w/ sanitized values + error messages
-        Customer.find(/*{'legal_name' : {$ne : 'Base By Dottie LLC'}}*/)
-          .sort([['legal_name', 'ascending']])
-          .exec( function (err, list_customers) {
-            if (err) { return next(err); }
-            // On success, render the invoice_form
-            // TODO: render if db not connected?
-            res.render(
-              'invoice_form',
-              {
-                title: 'New Invoice',
-                invoice: new Invoice(
-                  {
-                    invoice_date: req.body.invoice_date,
-                    project_date: req.body.project_date,
-                    project_number: req.body.project_number,
-                    project_name: req.body.project_name,
-                    project_street: req.body.project_street,
-                    project_city: req.body.project_city,
-                    project_state: req.body.project_state,
-                    project_zip: req.body.project_zip,
-                    invoice_total: invoiceTotal,
-                    notes: req.body.notes
-                  }),
-                customer_list: list_customers,
-                billables: billableArray,
-                errors: errors.array()
-              }
-            );
-          });
+        // Add the errors into our validatedLocals and render
+        validatedLocals['errors'] = errors.array();
+        renderInvoiceForm(req, res, validatedLocals);
         return;
       }
 
       else {
-        //No errors present, determine if duplicate
-        Invoice.findOne(
-          // Duplicate invoice if the following match an existing invoice:
-          {
-          'customer': req.body.customer,
-          'invoice_date': req.body.invoice_date,
-          'project_date': req.body.project_date,
-          'project_number': req.body.project_number
-          })
-          .exec( function(err, found_invoice) {
-            console.log('querying invoice collection for duplicate invoice')
-            if (err) { return next(err); }
+        // Check for duplicate and create the final invoice
+        async.parallel({
+          validUser: function(callback) {
+            User.findOne({'legal_name': 'Base By Dottie LLC'})
+            .exec(callback);
+          },
+          validCustomer: function(callback) {
+            Customer.findOne({'legal_name': req.body.bill_to})
+            .exec(callback);
+          },
+          duplicateInvoice: function(callback) {
+            Invoice.findOne({
+              // Duplicate invoice if the following match an existing invoice:
+              'customer': req.body.customer,
+              'invoice_date': req.body.invoice_date,
+              'project_date': req.body.project_date,
+              'project_number': req.body.project_number})
+              .exec(callback);
+          }
+        }, function(err, results) {
+          if (err) {return next(err);}
 
-            // Duplicate invoice found
-            if (found_invoice) {
-              res.redirect(found_invoice.url);
-            }
+          // Check for duplicate invoice
+          if (results.duplicateInvoice) {
+            res.redirect(results.duplicateInvoice.url);
+          } else {
+            // Create the locals for the invoice_template
+            var templateLocals = {
+              user: results.validUser,
+              customer: results.validCustomer,
+              billables: billableArray,
+              invoice: newInvoice,
+            };
 
-            else { // query db for biz needed and redirect to save/print page
-              // query for req.body.select company
-              Customer.findOne({'legal_name' : req.body.bill_to})
-                .exec( function (err, customer) {
-                  if (err) { return next(err); }
-                  // On success, grab the other needed business (temporary)
-                  // TODO: render if db not connected?
+            // TODO: create a fully filled, valid invoice object
+            // TODO: decide if i want to ask the user if they want to save first
+            // newInvoice.save( function (err) {
+            //   if (err) { return next(err); }
+            // });
 
-                  User.findOne({'legal_name': 'Base By Dottie LLC'})
-                  .exec( function (err, user) {
-                    if (err) { return next(err); }
-
-                    // TODO: decide if i want to ask the user if they want to save first
-                    // invoice.save( function (err) {
-                    //   if (err) { return next(err); }
-                    // });
-
-                    // On success, render the invoice_form
-                    res.render('invoice_template',
-                      {
-                        billing_user: user, // TODO: shove into invoice
-                        billing_customer: customer, // TODO: shove into invoice
-                        billables: billableArray, // TODO: shove billables into invoice
-                        invoice: new Invoice(
-                          {
-                            invoice_number: '20180001', //TODO: pull a real number from db
-                            invoice_date: req.body.invoice_date,
-                            project_date: req.body.project_date,
-                            project_number: req.body.project_number,
-                            project_name: req.body.project_name,
-                            project_street: req.body.project_street,
-                            project_city: req.body.project_city,
-                            project_state: req.body.project_state,
-                            project_zip: req.body.project_zip,
-                            invoice_total: invoiceTotal,
-                            notes: req.body.notes
-                          })
-                      }
-                    );
-                  });
-
-                });
-            }
-          });
+            // Render the final invoice
+            res.render('invoice_template', templateLocals);
+          }
+        }
+        );
       }
     }
 ];
 
-function getNextInvoiceNumber() {
-  Invoice.findOne()
-    .sort({'invoice_number': 'descending'})
-    .exec( function(err, resInvoice) {
-      console.log('querying invoice collection for next invoice_number')
-      if (err) { return next(err); }
+function renderInvoiceForm(req, res, validatedLocals) {
 
-      if (!resInvoice) {
-        // Dont return, use a callback instead ie callback(null, '20180001');
-        return '20180001';
+  async.parallel({
+    // TODO: Dynamically get current user once user scheme has been built
+    user: function(callback) {
+      User.findOne({'legal_name': 'Base By Dottie LLC'})
+      .exec(callback);
+    },
+    newestInvoice: function(callback) {
+      Invoice.findOne()
+      .sort({'invoice_number': 'descending'})
+      .exec(callback);
+    },
+    allCustomers: function(callback) {
+      Customer.find()
+      .sort([['legal_name', 'ascending']])
+      .exec(callback);
+    }
+  }, function(err, results) {
+      // Generate an invoice number (default is '20180001')
+      var nextInvoiceNumber = '20180001';
+      if (results.newestInvoice) {
+        // determine next invoice number
+        nextInvoiceNumber = (parseInt(results.newestInvoice.invoice_number) + 1).toString();
       }
-      //TODO: use callback not ret ie. callback((parseInt(resInvoice.invoice_number) + 1).toString());
-      //TODO: modify invoice to use numbers instead of strings
-      return (parseInt(resInvoice.invoice_number) + 1).toString();
+
+      var locals = {title: 'New Invoice', invoice_number: nextInvoiceNumber, customer_list: results.allCustomers};
+
+      if (!validatedLocals) {
+        // Render the form with title, invoice number, customer list only
+        res.render('invoice_form', locals);
+      }
+      else {
+        // Render the form with locals and validatedLocals
+        res.render('invoice_form', Object.assign(locals, validatedLocals));
+      }
+
     });
 
 }

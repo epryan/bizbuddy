@@ -11,5 +11,6 @@ block content
       p Error retrieving invoice metrics
     else
       p The database currently holds:
+      p #[strong Users:] !{data.user_count}
+      p #[strong Customers:] !{data.customer_count}
       p #[strong Invoices:] !{data.invoice_count}
-      p #[strong Businesses:] !{data.business_count}
