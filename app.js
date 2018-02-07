@@ -20,8 +20,7 @@ var app = express();
 
 //Set up mongoose (database) connection
 var mongoose = require('mongoose');
-var default_db_url = 'mongodb://localhost:27017/test'
-var mongoDB = process.env.MONGODB_URI || default_db_url;
+var mongoDB = process.env.MONGODB_URI;
 mongoose.connect(mongoDB, {
   useMongoClient: true
 });
