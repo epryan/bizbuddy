@@ -7,4 +7,10 @@ router.get('/', function(req, res) {
   res.render('index', { title: 'Base By Dottie' });
 });
 
+/* GET login page */
+
+/* GET logout page */
+
+/* POST profile page */
+
 module.exports = router;
