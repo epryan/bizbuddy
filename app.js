@@ -2,7 +2,7 @@
  * meanbase - A MEAN stack homepage and invoicing application for basebydottie.com
  * Author: Ryan Erickson (ryan@ryansip.com)
  */
-
+var dotenv = require('dotenv').config(); // Environment variable handler
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -20,8 +20,8 @@ var app = express();
 
 //Set up mongoose (database) connection
 var mongoose = require('mongoose');
-var dev_db_url = 'mongodb://localhost:27017/dev_db'
-var mongoDB = process.env.MONGODB_URI || dev_db_url;
+var default_db_url = 'mongodb://localhost:27017/test'
+var mongoDB = process.env.MONGODB_URI || default_db_url;
 mongoose.connect(mongoDB, {
   useMongoClient: true
 });
