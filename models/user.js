@@ -1,5 +1,6 @@
 //Require Mongoose
 var mongoose = require('mongoose');
+var bcrypt = require('bcrypt');
 
 //Define the schema
 var Schema = mongoose.Schema;
@@ -16,6 +17,8 @@ var UserSchema = new Schema({
   billing_zip: {type: String, required: true, min: 1, max:100},
   contact_number: {type: String, required: false, min: 1, max:16},
   email: {type: String, required: false, min: 1, max:100},
+  username: {type: String},
+  password: {type: String, required: true}
 });
 
 //Virtual field for the user detail url //TODO: redirect properly to profile or similar
@@ -41,5 +44,14 @@ function setAddress(address) {
   return address.toUpperCase();
 };
 
+// Authentication
+UserSchema.methods.generateHash = function(password) {
+  return bcrypt.hashSync(password, bcrypt.genSaltSync(8));
+};
+
+UserSchema.methods.validPassword = function(password) {
+  return bcrypt.compareSync(password, this.password);
+}
+
 //Export function to create the model class
-module.exports = mongoose.model('UserSchema', UserSchema);
+module.exports = mongoose.model('User', UserSchema);

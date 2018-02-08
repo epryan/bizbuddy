@@ -65,4 +65,4 @@ function formatTotal(total) {
 }
 
 //Export function to create the model class
-module.exports = mongoose.model('InvoiceSchema', InvoiceSchema);
+module.exports = mongoose.model('Invoice', InvoiceSchema);

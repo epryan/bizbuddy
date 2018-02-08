@@ -41,4 +41,4 @@ function setAddress(address) {
 };
 
 //Export function to create the model class
-module.exports = mongoose.model('CustomerSchema', CustomerSchema);
+module.exports = mongoose.model('Customer', CustomerSchema);

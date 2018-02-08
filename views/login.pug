@@ -1,0 +1,37 @@
+extends layout
+
+block content
+  div.text-center
+    h1 #{title}
+    hr
+
+  form(method='post' action='')
+    div.row
+      div.col-xs-2
+        //- Spacing col
+        
+      div.form-group.col-xs-8
+        label(for='username') Username
+        input#username.form-control(type='text', placeholder='Username', name='username' value=(undefined===user ? '' : user.username))
+
+      div.col-xs-2
+        //- Spacing col
+        
+    div.row
+      div.col-xs-2
+        //- Spacing col
+        
+      div.form-group.col-xs-8
+        label(for='password') Password
+        input#password.form-control(type='text', placeholder='Password', name='password' value=(undefined===user ? '' : user.password))
+
+      div.col-xs-2
+        //- Spacing col
+        
+    div.text-center
+      button.btn.btn-primary.btn-half-width(type='submit') Login
+
+    if errors
+      ul
+        for error in errors
+          li!= error.msg
