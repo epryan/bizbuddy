@@ -1,43 +1,32 @@
 /*
- * meanbase - A MEAN stack homepage and invoicing application for basebydottie.com
+ * BizBuddy - An express homepage and invoicing application for basebydottie.com
  * Author: Ryan Erickson (ryan@ryansip.com)
  */
 
+var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var compression = require('compression');
 var dotenv = require('dotenv').config(); // Environment variable handler
 var express = require('express');
-var path = require('path');
 var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var compression = require('compression');
 var helmet = require('helmet');
-
-// Server side session management (pair with connect-mongodb-session)
-var session = require('express-session');
-// Client sessions (MDN)
-//var sessions = require('client-sessions');
-// Authentication
-var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
-
-// Pull in Routes
-var index = require('./routes/index');
-var users = require('./routes/users');
-var invoicing = require('./routes/invoicing');
+var logger = require('morgan');
+var mongoose = require('mongoose');
+var path = require('path');
+var passport = require('passport'); // Authentication
+// Server side session management
+var session = require('express-session'); // in-memory session management (TODO: pair with connect-mongodb-session)
 
 // Init the application
 var app = express();
 
 //Set up mongoose (mongodb) connection
-var mongoose = require('mongoose');
-var mongoDB = process.env.MONGODB_URI;
-mongoose.connect(mongoDB, {
-  useMongoClient: true
-});
+mongoose.connect(process.env.MONGODB_URI, { useMongoClient: true });
 mongoose.Promise = global.Promise;
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
+
+// Pass the passport through configuration 'options'
+require('./auth/passport')(passport);
 
 // View engine
 app.set('views', path.join(__dirname, 'views'));
@@ -45,7 +34,7 @@ app.set('view engine', 'pug');
 
 app.use(logger('dev'));
 
-// Body parser
+// Body&Cookie parsing
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -64,33 +53,12 @@ app.use(session({
   resave: true
 }));
 
-// Passport init
+// Pass the passport through its final config pass
 app.use(passport.initialize());
 app.use(passport.session());
 
-// client-sessions
-// app.use(sessions({
-//   cookieName: 'userSession',
-//   secret: 'apples',
-//   duration: 24 * 60 * 60 * 1000,
-//   activeDuration: 1000  * 60 * 5
-// }));
-// app.use(function(req, res, next) {
-//   if (req.userSession.seenyou) {
-//     res.setHeader('X-Seen-You', 'true');
-//     console.log(req.userSession.seenyou);
-//   } else {
-//     req.userSession.seenyou = true;
-//     res.setHeader('X-Seen-You', 'false');
-//     console.log('not seen you');
-//   }
-//   next();
-// });
-
-// Map URLs to Routes
-app.use('/', index);
-app.use('/users', users);
-app.use('/invoicing', invoicing);
+// Pull in the apps routes passing passport for authentication
+require('./routes.js')(app, passport);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
