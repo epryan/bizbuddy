@@ -1,10 +1,11 @@
-# MEANBase aka BizBuddy
+# BizBuddy
 
-## A MEAN stack homepage and invoicing application developed for BaseByDottie
+## An express-based homepage and invoicing application developed for BaseByDottie
 
 * **Usage**
   - Clone the repo
   - Create database folders (eg. meanbase/data/db)
+  - Configure the .env files based on .env.default
 
   - npm install
 
