@@ -1,50 +1,64 @@
 /*
- * meanbase - A MEAN stack homepage and invoicing application for basebydottie.com
+ * BizBuddy - An express homepage and invoicing application for basebydottie.com
  * Author: Ryan Erickson (ryan@ryansip.com)
  */
+
+var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var compression = require('compression');
 var dotenv = require('dotenv').config(); // Environment variable handler
 var express = require('express');
-var path = require('path');
 var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var compression = require('compression');
 var helmet = require('helmet');
+var logger = require('morgan');
+var mongoose = require('mongoose');
+var path = require('path');
+var passport = require('passport'); // Authentication
+// Server side session management
+var session = require('express-session'); // in-memory session management (TODO: pair with connect-mongodb-session)
 
-var index = require('./routes/index');
-var users = require('./routes/users');
-var invoicing = require('./routes/invoicing');
-
+// Init the application
 var app = express();
 
-//Set up mongoose (database) connection
-var mongoose = require('mongoose');
-var mongoDB = process.env.MONGODB_URI;
-mongoose.connect(mongoDB, {
-  useMongoClient: true
-});
+//Set up mongoose (mongodb) connection
+mongoose.connect(process.env.MONGODB_URI, { useMongoClient: true });
 mongoose.Promise = global.Promise;
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
+
+// Pass the passport through configuration 'options'
+require('./auth/passport')(passport);
+
+// View engine
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
+
+app.use(logger('dev'));
+
+// Body&Cookie parsing
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+
+// Static assets visible to all clients
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 app.use(compression()); // Compress all routes
 app.use(helmet()); // Basic vulnerability mitigation
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+// express sessions init
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  saveUninitialized: true,
+  resave: true
+}));
 
-app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+// Pass the passport through its final config pass
+app.use(passport.initialize());
+app.use(passport.session());
 
-app.use('/', index);
-app.use('/users', users);
-app.use('/invoicing', invoicing);
+// Pull in the apps routes passing passport for authentication
+require('./routes.js')(app, passport);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
