@@ -21,8 +21,8 @@ var session = require('express-session'); // in-memory session management (TODO:
 var app = express();
 
 //Set up mongoose (mongodb) connection
-mongoose.connect(process.env.MONGODB_URI, { useMongoClient: true });
 mongoose.Promise = global.Promise;
+mongoose.connect(process.env.MONGODB_URI);
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // Pass the passport through configuration 'options'

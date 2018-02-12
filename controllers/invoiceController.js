@@ -1,7 +1,7 @@
-var Invoice = require('../models/invoice');
-var Customer = require('../models/customer');
-var User = require('../models/user');
-var BillableItem = require('../models/billableitem');
+var Invoice = require('../models/invoice').InvoiceModel;
+var Customer = require('../models/customer').CustomerModel;
+var User = require('../models/user').UserModel;
+//var BillableItem = { BilableItemModel } = require('../models/billableitem');
 
 var async = require('async');
 

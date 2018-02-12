@@ -1,5 +1,5 @@
 // Database info required to (de)serialize objects
-var User = require('../models/user');
+var User = require('../models/user').UserModel;
 
 // All strategies and their relative path
 var local = require('./passport/local');

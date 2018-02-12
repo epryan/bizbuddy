@@ -1,4 +1,4 @@
-var Customer = require('../models/customer');
+var Customer = require('../models/customer').CustomerModel;
 var async = require('async');
 
 const { body, validationResult } = require('express-validator/check');

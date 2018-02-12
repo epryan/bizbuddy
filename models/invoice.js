@@ -2,29 +2,30 @@
 var mongoose = require('mongoose');
 var moment = require('moment');
 
+var { UserSchema } = require('./user');
+var { CustomerSchema } = require('./customer');
+var { AddressSchema } = require('./address');
+
 //Define the schema
 var Schema = mongoose.Schema;
 
 var InvoiceSchema = new Schema({
-  // 'Business' fields TODO: dont use objectID since archival will degrade over time if data linked rather than directly input
-  billing_from: {type: Schema.ObjectId, ref: 'user'},
-  billing_to: {type: Schema.ObjectId, ref: 'customer'},
+  // To/From Fields
+  billing_from: {type: UserSchema}, // embedded: the state of the user at the time of the invoice
+  billing_to: {type: CustomerSchema}, // embedded: the state of the customer at the time of the invoice
   // Invoice-specific fields
-  invoice_number: {type: String, required: true, min: 1, max:50},
-  invoice_date: {type: String, required: true},
+  invoice_number: {type: String, required: true, min: 1, max:16}, // most will be 8 or 9: year + [i]th invoice that year
+  invoice_date: {type: String, required: true, max: 32}, // plenty of space for iso formatted date
   // Job fields
-  project_date: {type: String},
-  project_number: {type: String},
-  project_name: {type: String, required: true, min: 1, max:100},
-  project_street: {type: String, required: true, min: 1, max:100},
-  project_city: {type: String, required: true, min: 1, max:50},
-  project_state: {type: String, required: true, min: 1, max:2},
-  project_zip: {type: String, required: true, min: 1, max:25},
+  project_date: {type: String, max: 32}, // plenty of space for iso formatted date
+  project_number: {type: String, max: 16}, // general max
+  project_name: {type: String, required: true, min: 1, max:64}, // general max
+  project_address: {type: AddressSchema}, // embedded: the state of the address at the time of the invoice
   // Work completed fields
   billables: [{type: Schema.ObjectId, ref: 'BillableItem'}],
-  invoice_total: {type: Number, get: formatTotal},
+  invoice_total: {type: Number, get: formatTotal}, // 1,000,000.00 as number = 9 chars
   // Additional notes about the job
-  notes: {type: String, min: 1, max:250},
+  notes: {type: String, min: 1, max:240}, // 4 lines at 60 chars each
 });
 
 InvoiceSchema.virtual('invoice_date_formatted').get(
@@ -41,13 +42,13 @@ InvoiceSchema.virtual('project_date_formatted').get(
 
 InvoiceSchema.virtual('project_address_line_1').get(
   function() {
-    return formatAddress(this.project_street);
+    return formatAddress(this.project_address.street);
   }
 );
 
 InvoiceSchema.virtual('project_address_line_2').get(
   function() {
-    return formatAddress(this.project_city + ', ' + this.project_state + ' ' + this.project_zip);
+    return formatAddress(this.project_address.city + ', ' + this.project_address.state + ' ' + this.project_address.zip);
   }
 );
 
@@ -56,13 +57,11 @@ function formatDate(date) {
   return moment(date).format('M/D/YYYY');
 };
 
-function formatAddress(address) {
-  return address.toUpperCase();
-};
-
 function formatTotal(total) {
   return total.toFixed(2);
 }
 
-//Export function to create the model class
-module.exports = mongoose.model('Invoice', InvoiceSchema);
+//Expose the model as Invoice which saves to db as 'invoices'
+module.exports = {
+  InvoiceModel: mongoose.model('Invoice', InvoiceSchema)
+}
