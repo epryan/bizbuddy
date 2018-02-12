@@ -46,7 +46,7 @@ function setAddress(address) {
 
 // Authentication
 UserSchema.methods.generateHash = function(password) {
-  return bcrypt.hashSync(password, bcrypt.genSaltSync(8));
+  return bcrypt.hashSync(password, bcrypt.genSaltSync(12));
 };
 
 UserSchema.methods.validPassword = function(password) {
