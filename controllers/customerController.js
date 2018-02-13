@@ -1,4 +1,5 @@
 var Customer = require('../models/customer').CustomerModel;
+var Address = require('../models/address').AddressModel;
 var async = require('async');
 
 const { body, validationResult } = require('express-validator/check');
@@ -9,10 +10,10 @@ exports.customer_list = function(req, res) {
   // Query db for all customers listed alphabetically
   Customer.find()
     .sort([['legal_name', 'ascending']])
-    .exec( function (err, list_customers) {
+    .exec( function (err, customerList) {
       if (err) { return next(err); }
       // On success, render the customer list page
-      res.render('customer_list', {title: 'All Customers', customer_list: list_customers});
+      res.render('customer_list', {title: 'All Customers', customer_list: customerList});
     });
 };
 
@@ -46,9 +47,18 @@ exports.customer_create_post = [
   // Validate that the form fields are non null
   body('legal_name', 'Legal name required').isLength({ min: 1 }).trim(),
   body('address_line_1', 'Address required').isLength({ min: 1 }).trim(),
-  body('city', 'City required').isLength({ min: 1 }).trim(),
-  body('state', 'State required').isLength({ min: 1 }).trim(),
-  body('zip', 'Zip required').isLength({ min: 1 }).trim(),
+  body('city', 'City required')
+    .isLength({ min: 1 })
+    .isAlpha().withMessage('City cant contain numbers or special characters')
+    .trim(),
+  body('state', 'State required')
+    .isLength({ min: 1 })
+    .isAlpha().withMessage('State must be an abbreviated state ie. WA')
+    .trim(),
+  body('zip', 'Zip required')
+    .isPostalCode('US').withMessage('Zip must be a real numeric zip code')
+    .trim(),
+  //body('billing_email', 'Billing Email Required').isLength({ min: 6 }).isEmail().trim(),
   // Sanitize (trim/escape) the legal name and potentially null nickname
   sanitizeBody('legal_name').trim().escape(),
   sanitizeBody('nickname').trim().escape(),
@@ -56,22 +66,26 @@ exports.customer_create_post = [
   sanitizeBody('city').trim().escape(),
   sanitizeBody('state').trim().escape(),
   sanitizeBody('zip').trim().escape(),
-  sanitizeBody('contact_number').trim().escape(),
+  sanitizeBody('phone').trim().escape(),
+  //sanitizeBody('billing_email').trim().escape(),
 
   // Process request
   (req, res, next) => {
     // Validation errors
     const errors = validationResult(req);
 
-    // Create the object with sanitized data
+    // Create the address and customer objects from validated, sanitized data
+    var billingAddress = new Address({
+      street: req.body.address_line_1,
+      city: req.body.city,
+      state: req.body.state,
+      zip: req.body.zip,
+    });
     var customer = new Customer({
       legal_name: req.body.legal_name,
       nickname: req.body.nickname,
-      billing_street: req.body.address_line_1,
-      billing_city: req.body.city,
-      billing_state: req.body.state,
-      billing_zip: req.body.zip,
-      contact_number: req.body.contact_number
+      billing_address: billingAddress,
+      contact_number: req.body.phone
     });
 
     if (!errors.isEmpty()) {
@@ -89,7 +103,7 @@ exports.customer_create_post = [
           } else {
             customer.save( function (err) {
               if (err) { return next(err); }
-              // Customer saved, redirect to detail page
+              // Customer saved successfully, redirect to detail page
               res.redirect(customer.url);
             });
           }

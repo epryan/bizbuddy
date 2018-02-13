@@ -5,7 +5,7 @@ mixin billable(div_id, isVisible)
   div(id=div_id hidden=(true===isVisible ? false : 'hidden'))
     div.form-group.col-xs-12.col-sm-6
       label(for= 'description') Description
-      input.form-control(type= 'text' name= 'description' placeholder= 'Description')
+      input.form-control(type= 'text' name= 'description' placeholder= 'Description' value=(undefined===invoice ? '' : invoice.billables[div_id].description))
 
     div.form-group.col-xs-4.col-sm-2
       label(for= 'quantity') Quantity
@@ -69,18 +69,18 @@ block content
     div.row
       div.form-group.col-xs-12
         label(for='project_street') Street Address(*)
-        input#project_street.form-control(type='text', placeholder='Street Address', name='project_street' value=(undefined===invoice ? '' : invoice.project_street))
+        input#project_street.form-control(type='text', placeholder='Street Address', name='project_street' value=(undefined===invoice ? '' : invoice.project_address.street))
               
     div.row       
       div.form-group.col-xs-5
         label(for='project_city') City(*)
-        input#project_city.form-control(type='text', placeholder='City', name='project_city' value=(undefined===invoice ? '' : invoice.project_city)) 
+        input#project_city.form-control(type='text', placeholder='City', name='project_city' value=(undefined===invoice ? '' : invoice.project_address.city)) 
       div.form-group.col-xs-3
         label(for='project_state') State(*)
-        input#project_state.form-control(type='text', placeholder='State', name='project_state' value=(undefined===invoice ? '' : invoice.project_state))
+        input#project_state.form-control(type='text', placeholder='State', name='project_state' value=(undefined===invoice ? '' : invoice.project_address.state))
       div.form-group.col-xs-4
         label(for='project_zip') Zip(*)
-        input#project_zip.form-control(type='number', placeholder='Zip Code', name='project_zip' value=(undefined===invoice ? '' : invoice.project_zip))
+        input#project_zip.form-control(type='number', placeholder='Zip Code', name='project_zip' value=(undefined===invoice ? '' : invoice.project_address.zip))
     hr
 
     div.row

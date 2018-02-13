@@ -31,7 +31,7 @@ block content
       
       div.form-group.col-xs-4
         label(for='zip') Zip(*)
-        input#zip.form-control(type='text', placeholder='Zip', name='zip' value=(undefined===customer ? '' : customer.billing_zip))
+        input#zip.form-control(type='number', placeholder='Zip', name='zip' value=(undefined===customer ? '' : customer.billing_zip))
 
     div.row
       div.form-group.col-xs-12

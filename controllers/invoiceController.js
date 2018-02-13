@@ -1,9 +1,11 @@
 var Invoice = require('../models/invoice').InvoiceModel;
 var Customer = require('../models/customer').CustomerModel;
 var User = require('../models/user').UserModel;
-//var BillableItem = { BilableItemModel } = require('../models/billableitem');
+var Address = require('../models/address').AddressModel;
+var BillableItem = require('../models/billableitem').BillableItemModel;
 
 var async = require('async');
+var moment = require('moment');
 
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
@@ -47,15 +49,14 @@ exports.invoice_create_get = function(req, res) {
   renderInvoiceForm(req, res);
 };
 
-// Can be run in place of stringing body() calls, though it isnt especially useful right now
-function validateBillables() {
-  // Currently only checking the first billable
+// Helper function to sanitize each dynamic billable which may or may not be empty
+function sanitizeBillables() {
   var status = [];
-  for (var i = 0; i < 1; i++) {
-    status.push(sanitizeBody('description').trim());
-    status.push(sanitizeBody('quantity').trim());
-    status.push(sanitizeBody('unit_price').trim());
-    status.push(sanitizeBody('total_price').trim());
+  for (var i = 0; i < 5; i++) {
+    status.push(sanitizeBody('description').trim().escape());
+    status.push(sanitizeBody('quantity').trim().escape());
+    status.push(sanitizeBody('unit_price').trim().escape());
+    status.push(sanitizeBody('total_price').trim().escape());
   }
   return status;
 }
@@ -63,26 +64,33 @@ function validateBillables() {
 //POST version of invoice creation for form submission and error handling
 exports.invoice_create_post = [
     //Validate that the form fields are non null
-    body('invoice_date', 'Billing date required').isLength({ min: 1 }).trim(),
-    body('project_date', 'Project date required').isLength({ min: 1 }).trim(),
+    body('invoice_date', 'Billing date required').isISO8601().trim(),
+    body('bill_to', 'Invoice to required').isLength({ min: 1 }).trim(),
+
+    body('project_date', 'Project date required').isISO8601().trim(),
     body('project_number', 'Project number required').isLength({ min: 1 }).trim(),
     body('project_name', 'Project name required').isLength({ min: 1 }).trim(),
     body('project_street', 'Project street required').isLength({ min: 1 }).trim(),
     body('project_city', 'Project city required').isLength({ min: 1 }).trim(),
     body('project_state', 'Project state required').isLength({ min: 1 }).trim(),
     body('project_zip', 'Project zip required').isLength({ min: 1 }).trim(),
-    //Sanitize (trim/escape) the fields
-    //sanitizeBody('invoice_date').trim().escape(),
-    //sanitizeBody('project_date').trim().escape(),
+
+    //Sanitize the invoice fields
+    sanitizeBody('invoice_number').trim().escape(),
+    sanitizeBody('invoice_date').toDate(),
+    sanitizeBody('bill_to').trim().escape(),
+
+    sanitizeBody('project_date').toDate(),
     sanitizeBody('project_number').trim().escape(),
     sanitizeBody('project_name').trim().escape(),
     sanitizeBody('project_street').trim().escape(),
     sanitizeBody('project_city').trim().escape(),
     sanitizeBody('project_state').trim().escape(),
     sanitizeBody('project_zip').trim().escape(),
+
     sanitizeBody('notes').trim().escape(),
     sanitizeBody('invoice_total').trim().escape(),
-    validateBillables(),
+    sanitizeBillables(),
 
     //Process request
     (req, res, next) => {
@@ -112,34 +120,32 @@ exports.invoice_create_post = [
         }
       }
 
-      var newInvoice = new Invoice({
-          invoice_number: req.body.invoice_number,
-          invoice_date: req.body.invoice_date,
-          project_date: req.body.project_date,
-          project_number: req.body.project_number,
-          project_name: req.body.project_name,
-          project_street: req.body.project_street,
-          project_city: req.body.project_city,
-          project_state: req.body.project_state,
-          project_zip: req.body.project_zip,
-          invoice_total: invoiceTotal,
-          notes: req.body.notes
-        });
+      var projectAddress = new Address({
+        street: req.body.project_street,
+        city: req.body.project_city,
+        state: req.body.project_state,
+        zip: req.body.project_zip,
+      });
 
-      var validatedLocals = {
-        invoice: newInvoice,
-        billables: billableArray
-      };
+      var newInvoice = new Invoice({
+        //billing_from: via query below
+        //billing_to: via query below
+        invoice_number: req.body.invoice_number,
+        invoice_date: req.body.invoice_date,
+        project_date: req.body.project_date,
+        project_number: req.body.project_number,
+        project_name: req.body.project_name,
+        project_address: projectAddress,
+        billables: billableArray,
+        invoice_total: invoiceTotal,
+        notes: req.body.notes
+        });
 
       //Errors present, render again w/ sanitized values + error messages
       if (!errors.isEmpty()) {
-        // Add the errors into our validatedLocals and render
-        validatedLocals['errors'] = errors.array();
-        renderInvoiceForm(req, res, validatedLocals);
+        renderInvoiceForm(req, res, req,body.bill_to, newInvoice, errors.array());
         return;
-      }
-
-      else {
+      } else {
         // Check for duplicate and create the final invoice
         async.parallel({
           validUser: function(callback) {
@@ -166,22 +172,19 @@ exports.invoice_create_post = [
           if (results.duplicateInvoice) {
             res.redirect(results.duplicateInvoice.url);
           } else {
-            // Create the locals for the invoice_template
-            var templateLocals = {
-              user: results.validUser,
-              customer: results.validCustomer,
-              billables: billableArray,
-              invoice: newInvoice,
-            };
+            // Assign the final missing peices of the invoice
+            newInvoice.billing_from = results.validUser;
+            newInvoice.billing_to = results.validCustomer;
 
-            // TODO: create a fully filled, valid invoice object
-            // TODO: decide if i want to ask the user if they want to save first
-            // newInvoice.save( function (err) {
-            //   if (err) { return next(err); }
-            // });
+            // Timestamp the invoice before archiving, then render
+            newInvoice.creation_date = moment();
+            newInvoice.save( function (err) {
+              if (err) { return next(err); }
+              // Render the final invoice
+              res.render('invoice_template', {invoice: newInvoice});
+              return;
+            });
 
-            // Render the final invoice
-            res.render('invoice_template', templateLocals);
           }
         }
         );
@@ -189,10 +192,10 @@ exports.invoice_create_post = [
     }
 ];
 
-function renderInvoiceForm(req, res, validatedLocals) {
+function renderInvoiceForm(req, res, billTo, invoice, errors) {
 
   async.parallel({
-    // TODO: Dynamically get current user once user scheme has been built
+    // TODO: Pull current user when auth is fully flushed out
     user: function(callback) {
       User.findOne({'legal_name': 'Base By Dottie LLC'})
       .exec(callback);
@@ -215,15 +218,13 @@ function renderInvoiceForm(req, res, validatedLocals) {
         nextInvoiceNumber = (parseInt(results.newestInvoice.invoice_number) + 1).toString();
       }
 
-      var locals = {title: 'New Invoice', invoice_number: nextInvoiceNumber, customer_list: results.allCustomers};
-
-      if (!validatedLocals) {
+      if (!invoice) {
         // Render the form with title, invoice number, customer list only
-        res.render('invoice_form', locals);
+        res.render('invoice_form', {title: 'New Invoice', invoice_number: nextInvoiceNumber, customer_list: results.allCustomers});
       }
       else {
-        // Render the form with locals and validatedLocals + errors
-        res.render('invoice_form', Object.assign(locals, validatedLocals));
+        // Render the form with locals, invoice, errors
+        res.render('invoice_form', {title: 'New Invoice', invoice_number: nextInvoiceNumber, customer_list: results.allCustomers, bill_to: billTo, invoice: invoice, errors: errors});
       }
     });
 
