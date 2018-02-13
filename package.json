@@ -11,6 +11,7 @@
     "bcrypt": "^1.0.3",
     "body-parser": "~1.18.2",
     "compression": "^1.7.1",
+    "connect-mongodb-session": "^1.4.0",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "dotenv": "^5.0.0",
