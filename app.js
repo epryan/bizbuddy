@@ -15,7 +15,8 @@ var mongoose = require('mongoose');
 var path = require('path');
 var passport = require('passport'); // Authentication
 // Server side session management
-var session = require('express-session'); // in-memory session management (TODO: pair with connect-mongodb-session)
+var session = require('express-session'); // in-memory session management
+var mongosessions = require('connect-mongodb-session')(session); // in-db session management
 
 // Init the application
 var app = express();
@@ -24,6 +25,16 @@ var app = express();
 mongoose.Promise = global.Promise;
 mongoose.connect(process.env.MONGODB_URI);
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
+
+// Set up the mongodb sessions for persistent session tracking
+var store = new mongosessions({
+  uri: process.env.MONGODB_URI,
+  collection: 'sessions'
+});
+store.on('error', function(err) {
+  assert.ifError(err);
+  assert.ok(false);
+});
 
 // Pass the passport through configuration 'options'
 require('./auth/passport')(passport);
@@ -49,6 +60,10 @@ app.use(helmet()); // Basic vulnerability mitigation
 // express sessions init
 app.use(session({
   secret: process.env.SESSION_SECRET,
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24, // 1 day
+  },
+  store: store,
   saveUninitialized: true,
   resave: true
 }));
