@@ -31,10 +31,19 @@ html(lang='en')
           //- NAV-BODY
           div#navbar.navbar-collapse.collapse
             ul(class='nav navbar-nav navbar-right')
-              +nav-item('/', 'Home')
-              +nav-item('/', 'About')
-              +nav-item('/', 'Contact')
-               
+              +nav-item('/invoicing', 'Invoicing')
+              li.dropdown(role='presentation')
+                a.dropdown-toggle(href='#' data-toggle='dropdown' role='button') View
+                  span.caret
+                ul(class='dropdown-menu')
+                  +nav-item('/invoicing/invoices', 'All invoices')
+                  +nav-item('/invoicing/customers', 'All customers')
+              li.dropdown(role='presentation')
+                a.dropdown-toggle(href='#' data-toggle='dropdown' role='button') Create
+                  span.caret
+                ul(class='dropdown-menu')
+                  +nav-item('/invoicing/invoice/create', 'New invoice')
+                  +nav-item('/invoicing/customer/create', 'New customer')  
       //- PAGE CONTENT
       block content
     
