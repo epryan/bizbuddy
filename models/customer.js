@@ -9,7 +9,8 @@ var CustomerSchema = new Schema({
   nickname: {type: String, required: false, min: 1, max:64},
   billing_address: {type: AddressSchema},
   contact_number: {type: String, required: false, min: 1, max:32},
-  email: {type: String, required: false, min: 1, max:128},
+  contact_email: {type: String, required: false, min: 1, max:128},
+  billing_email: {type: String, required: true, min: 1, max:128},
 });
 
 //Virtual field for the customer detail url #TODO: decouple url and schema

@@ -37,7 +37,17 @@ block content
       div.form-group.col-xs-12
         label(for='phone') Contact Number
         input#phone.form-control(type='tel', placeholder='(123)455-4321', name='phone' value=(undefined===customer ? '' : customer.contact_number))
-      
+    
+    div.row
+      div.form-group.col-xs-12
+        label(for='contact_email') Contact Email
+        input#contact_email.form-control(type='email', placeholder='email@domain.com', name='contact_email' value=(undefined===customer ? '' : customer.contact_email))
+          
+    div.row
+      div.form-group.col-xs-12
+        label(for='billing_email') Billing Email
+        input#billing_email.form-control(type='email', placeholder='email@domain.com', name='billing_email' value=(undefined===customer ? '' : customer.billing_email))                
+    
     div.text-center
       button.btn.btn-primary.btn-full-width(type='submit') Submit
 

@@ -58,7 +58,8 @@ exports.customer_create_post = [
   body('zip', 'Zip required')
     .isPostalCode('US').withMessage('Zip must be a real numeric zip code')
     .trim(),
-  //body('billing_email', 'Billing Email Required').isLength({ min: 6 }).isEmail().trim(),
+  //body('contact_email', 'Contact Email Required').isEmail().trim(),
+  body('billing_email', 'Billing Email Required').isLength({ min: 6 }).isEmail().trim(),
   // Sanitize (trim/escape) the legal name and potentially null nickname
   sanitizeBody('legal_name').trim().escape(),
   sanitizeBody('nickname').trim().escape(),
@@ -67,7 +68,8 @@ exports.customer_create_post = [
   sanitizeBody('state').trim().escape(),
   sanitizeBody('zip').trim().escape(),
   sanitizeBody('phone').trim().escape(),
-  //sanitizeBody('billing_email').trim().escape(),
+  sanitizeBody('contact_email').trim().escape(),
+  sanitizeBody('billing_email').trim().escape(),
 
   // Process request
   (req, res, next) => {
@@ -85,8 +87,14 @@ exports.customer_create_post = [
       legal_name: req.body.legal_name,
       nickname: req.body.nickname,
       billing_address: billingAddress,
-      contact_number: req.body.phone
+      contact_number: req.body.phone,
+      //contact_email optional
+      billing_email: req.body.billing_email
     });
+
+    if (req.body.contact_email) {
+      customer.contact_email = req.body.contact_email;
+    }
 
     if (!errors.isEmpty()) {
       // User input errors present, render again w/ sanitized values + error messages
