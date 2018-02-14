@@ -11,9 +11,7 @@ module.exports = function(app, passport) {
 
   /// User login/logout ///
 
-  app.get('/login', function(req, res) {
-    res.render('login', { title: 'Employee Login'});
-  });
+  app.get('/login', loginRoute);
 
   // Short version meant to use passport default handling
   app.post('/login', passport.authenticate( 'local', {
@@ -39,7 +37,7 @@ module.exports = function(app, passport) {
 
   app.get('/logout', function(req, res) {
     req.logout(); // Passport's provided logout function
-    res.redirect('/login');
+    res.redirect('/');
   });
 
   /// Protected routes (requires login) ///
@@ -55,5 +53,15 @@ function requireLogin(req, res, next) {
     return next();
   } else {
     res.redirect('/login');
+  }
+}
+
+// If a logged in user pings /login, they are redirected to the main invoicing page
+// If an not logged in user pings /login, they are shown the login page
+function loginRoute(req, res, next) {
+  if (req.isAuthenticated()) {
+    res.redirect('/invoicing');
+  } else {
+    res.render('login', { title: 'Employee Login'});
   }
 }
