@@ -8,7 +8,7 @@ module.exports = new LocalStrategy({
     //passReqToCallback: true
     },
     function(username, password, done) {
-      User.findOne({'username': username}, 'username password', function(err, user) {
+      User.findOne({'username': username.toLowerCase()}, 'username password', function(err, user) {
         if (err) { return done(err); }
 
         if (!user) {
