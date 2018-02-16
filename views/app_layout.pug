@@ -1,7 +1,8 @@
 //- Syntactical sugar to beautify nav links
 mixin nav-item(link, name)
   li
-    a(href= link) #{name}
+    a(href= link)
+      b #{name}
     
 doctype html
 html(lang='en')
@@ -27,20 +28,23 @@ html(lang='en')
               span.icon-bar
               span.icon-bar
               span.icon-bar
-            a.navbar-brand(href='/') Base By Dottie
+            a.navbar-brand(href='/')
+              b Base By Dottie
           //- NAV-BODY
           div#navbar.navbar-collapse.collapse
             ul(class='nav navbar-nav navbar-right')
               +nav-item('/invoicing', 'Invoicing')
               li.dropdown(role='presentation')
-                a.dropdown-toggle(href='#' data-toggle='dropdown' role='button') View
-                  span.caret
+                a.dropdown-toggle(href='#' data-toggle='dropdown' role='button') 
+                  b View
+                    span.caret
                 ul(class='dropdown-menu')
                   +nav-item('/invoicing/invoices', 'All invoices')
                   +nav-item('/invoicing/customers', 'All customers')
               li.dropdown(role='presentation')
-                a.dropdown-toggle(href='#' data-toggle='dropdown' role='button') Create
-                  span.caret
+                a.dropdown-toggle(href='#' data-toggle='dropdown' role='button')
+                  b Create
+                    span.caret
                 ul(class='dropdown-menu')
                   +nav-item('/invoicing/invoice/create', 'New invoice')
                   +nav-item('/invoicing/customer/create', 'New customer') 

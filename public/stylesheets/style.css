@@ -1,19 +1,38 @@
-.sidebar-nav {
-    margin-top: 20px;
-    padding: 0;
-    list-style: none;
+.navbar {
+  background-color: rgb(145, 197, 211);
 }
 
-.sidebar-btn {
-  margin: 5px 5px 5px 5px;
+.navbar-brand {
+  color: #FFF !important;
+}
+
+.navbar-nav>li>a {
+  color: #FFF !important;
+}
+
+.navbar-default
+.navbar-toggle
+.icon-bar {
+  background-color: #FFF;
+}
+
+.navbar-default
+.navbar-nav
+.open
+.dropdown-menu>li>a  {
+  color: #FFF;
+}
+
+p {
+    font-size: 15px;
 }
 
 .btn-full-width {
-  width: 100%
+  width: 100%;
 }
 
 .btn-half-width {
-  width: 50%
+  width: 50%;
 }
 
 .bg-tile {

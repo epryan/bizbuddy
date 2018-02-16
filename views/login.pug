@@ -7,30 +7,33 @@ block content
 
   form(method='post' action='')
     div.row
-      div.col-xs-2
+      div.col-xs-2.col-md-3
         //- Spacing col
         
-      div.form-group.col-xs-8
+      div.form-group.col-xs-8.col-md-6
         label(for='username') Username
-        input#username.form-control(type='text', placeholder='Username', name='username' value=(undefined===user ? '' : user.username))
+        input#username.form-control(autofocus type='text', placeholder='Username', name='username' value=(undefined===user ? '' : user.username))
 
-      div.col-xs-2
+      div.col-xs-2.col-md-3
         //- Spacing col
         
     div.row
-      div.col-xs-2
+      div.col-xs-2.col-md-3
         //- Spacing col
         
-      div.form-group.col-xs-8
+      div.form-group.col-xs-8.col-md-6
         label(for='password') Password
         input#password.form-control(type='password', placeholder='Password', name='password' value=(undefined===user ? '' : user.password))
 
-      div.col-xs-2
+      div.col-xs-2.col-md-3
         //- Spacing col
         
-    div.text-center
-      button.btn.btn-primary.btn-half-width(type='submit') Login
-
+    div.text-center.row
+      div.col-xs-2.col-md-3
+      div.col-xs-8.col-md-6
+        button.btn.btn-primary.btn-full-width(type='submit') Login
+      div.col-xs-2.col-md-3
+        
     if errors
       ul
         for error in errors
