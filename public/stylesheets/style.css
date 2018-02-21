@@ -23,6 +23,10 @@
   color: #FFF;
 }
 
+.dropdown-menu {
+  background-color: rgb(145, 197, 211);
+}
+
 p {
     font-size: 15px;
 }
