@@ -4,8 +4,8 @@
 
 * **Usage**
   - Clone the repo
-  - Create database folders (eg. meanbase/data/db)
-  - Configure the .env files based on .env.default
+  - Create database folders (eg. bizbuddy/data/db)
+  - Create and configure the .env file based on .env.default
 
   - npm install
 
@@ -15,6 +15,6 @@
   - Start the web app!
     - npm run start
     - or
-    - DEBUG=meanbase:* npm run devstart
+    - DEBUG=bizbuddy:* npm run devstart
 
-  - The default config listens on port 3000 (ie. http://localhost:3000/)
+  - The server will listen on the port specified in .env (ie. http://localhost:ENVPORT/)
