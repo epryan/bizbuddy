@@ -11,7 +11,7 @@ module.exports = function(app, passport) {
 
   /// User login/logout ///
 
-  app.get('/login', loginRoute);
+  app.get('/login', routeLogin);
 
   // Short version meant to use passport default handling
   app.post('/login', passport.authenticate( 'local', {
@@ -58,7 +58,7 @@ function requireLogin(req, res, next) {
 
 // If a logged in user pings /login, they are redirected to the main invoicing page
 // If an not logged in user pings /login, they are shown the login page
-function loginRoute(req, res, next) {
+function routeLogin(req, res, next) {
   if (req.isAuthenticated()) {
     res.redirect('/invoicing');
   } else {

@@ -12,6 +12,7 @@ var { BillableItemSchema } = require('./billableitem');
 var InvoiceSchema = new Schema({
   // Invoice Metadata
   creation_date: {type: String},
+  user_id: {type: Schema.Types.ObjectId},
   // To/From Fields
   billing_from: {type: UserSchema}, // embedded: the state of the user at the time of the invoice
   billing_to: {type: CustomerSchema}, // embedded: the state of the customer at the time of the invoice

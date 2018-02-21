@@ -173,6 +173,7 @@ exports.invoice_create_post = [
             res.redirect(results.duplicateInvoice.url);
           } else {
             // Assign the final missing peices of the invoice
+            newInvoice.user_id = results.validUser._id;
             newInvoice.billing_from = results.validUser;
             newInvoice.billing_to = results.validCustomer;
 

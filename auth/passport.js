@@ -1,5 +1,5 @@
 // Database info required to (de)serialize objects
-var User = require('../models/user').UserModel;
+var Login = require('../models/login').LoginModel;
 
 // All strategies and their relative path
 var local = require('./passport/local');
@@ -12,7 +12,7 @@ module.exports = function(passport) {
   });
 
   passport.deserializeUser(function(id, callback) {
-    User.findById(id, function(err, user) {
+    Login.findById(id, function(err, user) {
       callback(err, user);
     })
   });

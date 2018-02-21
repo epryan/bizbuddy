@@ -1,5 +1,5 @@
 var LocalStrategy = require('passport-local').Strategy;
-var User = require('mongoose').model('User');
+var Login = require('mongoose').model('Login');
 
 module.exports = new LocalStrategy({
     usernameField: 'username',
@@ -8,19 +8,19 @@ module.exports = new LocalStrategy({
     //passReqToCallback: true
     },
     function(username, password, done) {
-      User.findOne({'username': username.toLowerCase()}, 'username password', function(err, user) {
+      Login.findOne({'username': username.toLowerCase()}, 'username password', function(err, login) {
         if (err) { return done(err); }
 
-        if (!user) {
+        if (!login) {
           return done(null, false);
         }
 
-        if (!user.validPassword(password)) {
+        if (!login.validPassword(password)) {
           return done(null, false);
         }
 
-        // User has passed authentication
-        return done(null, user);
+        // Login has passed authentication
+        return done(null, login);
       });
   }
 );
