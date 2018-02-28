@@ -51,6 +51,11 @@ InvoiceSchema.virtual('project_address_line_2')
       return this.project_address.city + ', ' + this.project_address.state + ' ' + this.project_address.zip;
     });
 
+InvoiceSchema.virtual('url')
+  .get( function() {
+      return '/invoicing/invoice/' + this.invoice_number;
+    });
+
 //Using moment(ISODATE).format('M/D/YYYY') for '1/1/2018' timestamps
 function formatDate(date) {
   return moment(date).format('M/D/YYYY');
