@@ -32,16 +32,23 @@ exports.index = function(req, res) {
 exports.invoice_list = function(req, res) {
 
   Invoice.find()
-  .exec(function (err, list_invoices) {
+  .sort({invoice_number: -1})
+  .exec(function (err, invoiceList) {
     if (err) { return next(err); }
     // on success, render
-    res.render('invoice_list', {title: 'All Invoices', invoice_list: list_invoices});
+    res.render('invoice_list', {title: 'All Invoices', invoice_list: invoiceList});
   })
 };
 
 //Display a specific invoice
 exports.invoice_detail = function(req, res) {
-  res.send('#todo: Display invoice #' + req.params.id);
+
+  Invoice.findOne({'invoice_number': req.params.id})
+  .exec(function (err, invoice) {
+    if (err) { return next(err); }
+
+    res.render('invoice_template', {invoice: invoice});
+  });
 };
 
 //GET version of invoice creation for initial empty form
@@ -179,6 +186,34 @@ exports.invoice_create_post = [
 
             // Timestamp the invoice before archiving, then render
             newInvoice.creation_date = moment();
+
+            // CREATE THE PDF OF THE INVOICE
+
+            const puppeteer = require('puppeteer');
+
+            (async function createPdf(invoiceNumber)  {
+              // const browser = await puppeteer.launch({headless: false, slowMo: 50});
+              const browser = await puppeteer.launch();
+              const page = await browser.newPage();
+              const httpLoginUrl = 'http://localhost:3000/login';
+              const httpsLoginUrl = 'https://localhost:3000/login';
+              const invoiceUrl = 'http://localhost:3000/invoicing/invoice/' + invoiceNumber;
+              const invoiceFileName = 'Invoice' + invoiceNumber + '.pdf';
+
+              await page.setCookie({
+                name: 'connect.sid',
+                value: req.cookies['connect.sid'],
+                domain: 'localhost'
+              });
+              await page.goto( invoiceUrl, {waitUntil: 'networkidle0'});
+
+              await page.pdf({path: invoiceFileName, format: 'A4'});
+
+              await browser.close();
+            })(newInvoice.invoice_number);
+
+            // END INVOICE TO PDF
+
             newInvoice.save( function (err) {
               if (err) { return next(err); }
               // Render the final invoice
