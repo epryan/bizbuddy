@@ -11,16 +11,16 @@ var { BillableItemSchema } = require('./billableitem');
 
 var InvoiceSchema = new Schema({
   // Invoice Metadata
-  creation_date: {type: String},
+  creation_date: {type: Date},
   user_id: {type: Schema.Types.ObjectId},
   // To/From Fields
   billing_from: {type: UserSchema}, // embedded: the state of the user at the time of the invoice
   billing_to: {type: CustomerSchema}, // embedded: the state of the customer at the time of the invoice
   // Invoice-specific fields
   invoice_number: {type: String, required: true, min: 1, max:16}, // most will be 8 or 9: year + [i]th invoice that year
-  invoice_date: {type: String, required: true, max: 32}, // plenty of space for iso formatted date
+  invoice_date: {type: Date, required: true},
   // Job fields
-  project_date: {type: String, max: 32}, // plenty of space for iso formatted date
+  project_date: {type: Date},
   project_number: {type: String, max: 16}, // general max
   project_name: {type: String, required: true, min: 1, max:64}, // general max
   project_address: {type: AddressSchema}, // embedded: the state of the address at the time of the invoice
@@ -41,6 +41,17 @@ InvoiceSchema.virtual('project_date_formatted')
       return formatDate(this.project_date);
     });
 
+// Formatting for the date pickers on client side
+InvoiceSchema.virtual('invoice_date_picker_format')
+  .get( function() {
+      return moment(this.invoice_date).utc().format('YYYY-MM-DD');
+  });
+
+InvoiceSchema.virtual('project_date_picker_format')
+  .get( function() {
+      return moment(this.project_date).utc().format('YYYY-MM-DD');
+  });
+
 InvoiceSchema.virtual('project_address_line_1')
   .get( function() {
       return this.project_address.street;
@@ -56,16 +67,17 @@ InvoiceSchema.virtual('url')
       return '/invoicing/invoice/' + this.invoice_number;
     });
 
-//Using moment(ISODATE).format('M/D/YYYY') for '1/1/2018' timestamps
+//Using moment(ISODATE).utc().format('M/D/YYYY') for '1/1/2018' timestamps
 function formatDate(date) {
-  return moment(date).format('M/D/YYYY');
+  // We set the date as UTC so we must output it in the same UTC format
+  return moment(date).utc().format('M/D/YYYY');
 };
 
 function formatDollar(amount) {
   return amount.toFixed(2);
-}
+};
 
 module.exports = {
   //Expose the model as Invoice which saves to db as 'invoices'
   InvoiceModel: mongoose.model('Invoice', InvoiceSchema)
-}
+};

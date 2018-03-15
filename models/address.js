@@ -8,6 +8,8 @@ var AddressSchema = new Schema({
   city: {type: String, required: true, min: 1, max:32, uppercase: true}, // Lake Chaubunagungamaug + padding to 32
   state: {type: String, required: true, min: 1, max:4, uppercase: true}, // D.C. is 4 chars
   zip: {type: String, required: true, min: 1, max:16}, // Extended zip + padding to 16
+  lat: {type: Number},
+  lng: {type: Number},
 }, {'_id': false, 'autoIndex': false}); // skip _id as an address will always be a subdocument
 
 module.exports = {
