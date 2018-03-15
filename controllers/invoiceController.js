@@ -1,11 +1,12 @@
-var Invoice = require('../models/invoice').InvoiceModel;
-var Customer = require('../models/customer').CustomerModel;
-var User = require('../models/user').UserModel;
-var Address = require('../models/address').AddressModel;
-var BillableItem = require('../models/billableitem').BillableItemModel;
+const Invoice = require('../models/invoice').InvoiceModel;
+const Customer = require('../models/customer').CustomerModel;
+const User = require('../models/user').UserModel;
+const Address = require('../models/address').AddressModel;
+const BillableItem = require('../models/billableitem').BillableItemModel;
 
-var async = require('async');
-var moment = require('moment');
+const async = require('async');
+const moment = require('moment');
+const puppeteer = require('puppeteer');
 
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
@@ -17,6 +18,14 @@ exports.index = function(req, res) {
     invoice_count: function(callback) {
       Invoice.count(callback);
     },
+    total_billed: function(callback) {
+      Invoice.aggregate(
+        [{$group: {
+            _id: null,
+            total: { $sum: "$invoice_total" }
+            }
+          }], callback)
+    },
     user_count: function(callback) {
       User.count(callback);
     },
@@ -24,6 +33,8 @@ exports.index = function(req, res) {
       Customer.count(callback);
     },
   }, function(err, results) {
+    // Unpack the aggregation result and render
+    results.total_billed = results.total_billed[0].total.toFixed(2);
     res.render('invoicing', { title: 'Invoicing', error: err, data: results});
   });
 };
@@ -47,7 +58,17 @@ exports.invoice_detail = function(req, res) {
   .exec(function (err, invoice) {
     if (err) { return next(err); }
 
-    res.render('invoice_template', {invoice: invoice});
+    res.render('invoice_template', {invoice: invoice, toolbar_visible: true});
+  });
+};
+
+//Display only the invoice (no admin bar) for 'api-like' printing purposes
+exports.invoice_printable = function(req, res) {
+  Invoice.findOne({'invoice_number': req.params.id})
+  .exec(function (err, invoice) {
+    if (err) { return next(err); }
+
+    res.render('invoice_template', {invoice: invoice, toolbar_visible: false});
   });
 };
 
@@ -58,8 +79,8 @@ exports.invoice_create_get = function(req, res) {
 
 // Helper function to sanitize each dynamic billable which may or may not be empty
 function sanitizeBillables() {
-  var status = [];
-  for (var i = 0; i < 5; i++) {
+  let status = [];
+  for (let i = 0; i < 5; i++) {
     status.push(sanitizeBody('description').trim().escape());
     status.push(sanitizeBody('quantity').trim().escape());
     status.push(sanitizeBody('unit_price').trim().escape());
@@ -105,15 +126,15 @@ exports.invoice_create_post = [
       const errors = validationResult(req);
 
       // Truncate the invoice price to the nearest penny amount
-      var invoiceTotal = parseFloat(req.body.invoice_total).toFixed(2);
+      let invoiceTotal = parseFloat(req.body.invoice_total).toFixed(2);
 
       // Create all non null billable items
-      var billableArray = [];
+      let billableArray = [];
       for (i = 0; i < 5; i++) {
-        var desc = req.body.description[i];
-        var qty = req.body.quantity[i];
-        var unit = req.body.unit_price[i];
-        var total = req.body.total_price[i];
+        let desc = req.body.description[i];
+        let qty = req.body.quantity[i];
+        let unit = req.body.unit_price[i];
+        let total = req.body.total_price[i];
 
         if ( desc && qty && unit && total) {
           billableArray.push(
@@ -127,14 +148,14 @@ exports.invoice_create_post = [
         }
       }
 
-      var projectAddress = new Address({
+      let projectAddress = new Address({
         street: req.body.project_street,
         city: req.body.project_city,
         state: req.body.project_state,
         zip: req.body.project_zip,
       });
 
-      var newInvoice = new Invoice({
+      let newInvoice = new Invoice({
         //billing_from: via query below
         //billing_to: via query below
         invoice_number: req.body.invoice_number,
@@ -150,7 +171,7 @@ exports.invoice_create_post = [
 
       //Errors present, render again w/ sanitized values + error messages
       if (!errors.isEmpty()) {
-        renderInvoiceForm(req, res, req,body.bill_to, newInvoice, errors.array());
+        renderInvoiceForm(req, res, req.body.bill_to, newInvoice, errors.array());
         return;
       } else {
         // Check for duplicate and create the final invoice
@@ -187,37 +208,11 @@ exports.invoice_create_post = [
             // Timestamp the invoice before archiving, then render
             newInvoice.creation_date = moment();
 
-            // CREATE THE PDF OF THE INVOICE
-
-            const puppeteer = require('puppeteer');
-
-            (async function createPdf(invoiceNumber)  {
-              // const browser = await puppeteer.launch({headless: false, slowMo: 50});
-              const browser = await puppeteer.launch();
-              const page = await browser.newPage();
-              const httpLoginUrl = 'http://localhost:3000/login';
-              const httpsLoginUrl = 'https://localhost:3000/login';
-              const invoiceUrl = 'http://localhost:3000/invoicing/invoice/' + invoiceNumber;
-              const invoiceFileName = 'Invoice' + invoiceNumber + '.pdf';
-
-              await page.setCookie({
-                name: 'connect.sid',
-                value: req.cookies['connect.sid'],
-                domain: 'localhost'
-              });
-              await page.goto( invoiceUrl, {waitUntil: 'networkidle0'});
-
-              await page.pdf({path: invoiceFileName, format: 'A4'});
-
-              await browser.close();
-            })(newInvoice.invoice_number);
-
-            // END INVOICE TO PDF
-
-            newInvoice.save( function (err) {
+            newInvoice.save( async function (err) {
               if (err) { return next(err); }
+              await createPdf(newInvoice.invoice_number, req.cookies['connect.sid']);
               // Render the final invoice
-              res.render('invoice_template', {invoice: newInvoice});
+              res.redirect(newInvoice.url);
               return;
             });
 
@@ -248,7 +243,7 @@ function renderInvoiceForm(req, res, billTo, invoice, errors) {
     }
   }, function(err, results) {
       // Generate an invoice number (default is '20180001')
-      var nextInvoiceNumber = '20180001';
+      let nextInvoiceNumber = '20180001';
       if (results.newestInvoice) {
         // determine next invoice number
         nextInvoiceNumber = (parseInt(results.newestInvoice.invoice_number) + 1).toString();
@@ -265,5 +260,29 @@ function renderInvoiceForm(req, res, billTo, invoice, errors) {
     });
 
 };
+
+/* Borrow the user's session ID and locally browse (via headless chrome) to the
+ * invoice detail page. Convert the page into a pdf for later retreival.
+ */
+async function createPdf(invoiceNumber, cookieValue)  {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  const port = process.env.PORT;
+  const httpLoginUrl = 'http://localhost:' + port + '/login';
+  const httpsLoginUrl = 'https://localhost:' + port + '/login';
+  const invoiceUrl = 'http://localhost:' + port + '/invoicing/invoice/printable/' + invoiceNumber;
+  const invoiceFileName = 'Invoice' + invoiceNumber + '.pdf';
+
+  await page.setCookie({
+    name: 'connect.sid',
+    value: cookieValue,
+    domain: 'localhost'
+  });
+  await page.goto( invoiceUrl, {waitUntil: 'networkidle0'});
+
+  await page.pdf({path: 'private/pdfs/' + invoiceFileName, format: 'A4'});
+
+  await browser.close();
+}
 
 //ToDo: add update and delete handlers

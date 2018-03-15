@@ -5,9 +5,16 @@ var nextId = 1;
 function showNextBillable() {
   if (nextId < MAXBILLABLES) {
     var billableId = '#billable_' + nextId;
-    //$(billable_id).removeClass('hidden')
-    $(billableId).show()
-    nextId++;
+    //$(billable_id).removeClass('hidden') // .show is a better alternative
+    // an undefined hidden attribute shows the element is visible
+    if ($(billableId).attr('hidden') == undefined) {
+      nextId++;
+      showNextBillable();
+    }
+    else {
+      $(billableId).show()
+      nextId++;
+    }
   }
 }
 

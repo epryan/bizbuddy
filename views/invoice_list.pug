@@ -1,14 +1,62 @@
 extends app_layout
 
+mixin invoiceCard(invoice, float)
+  a(href=invoice.url style='display:block;')
+    div.col-xs-12.col-md-5.text-center.well(style='float:' + float)
+      div.row
+        div.col-xs-6
+          p.text-left= invoice.invoice_number
+        div.col-xs-6
+          p.text-right= invoice.project_number
+      div.row
+        b= invoice.project_name
+      div.row
+        p= invoice.billing_to.legal_name
+      div.row
+        div.col-xs-6
+          p.text-left= invoice.invoice_date_formatted
+        div.col-xs-6  
+          p.text-right= invoice.project_date_formatted
+
+mixin invoiceRow(invoice)
+  tr(onclick='location.href="' + invoice.url + '"')
+    td= invoice.invoice_number
+    td= invoice.project_name
+    td= invoice.invoice_total
+
 block content
-  div(class='text-center')
+  div.container-fluid(class='text-center')
     h1= title
-
-  ul
-  each invoice in invoice_list
-    li
-      a(href=invoice.url) #{invoice.invoice_number}
-      | (#{invoice.project_name})
-
-  else
-    p(class='text-center') There are no invoices yet! 
+    
+    //- Invoice Table
+    table.table.table-hover(style='width: 100%')
+      thead
+        tr
+          th.text-center= 'Invoice #'
+          th.text-center= 'Project Name'
+          th.text-center= '$ Billed'
+      tbody
+        - var i = 0;
+        while i < invoice_list.length
+          +invoiceRow(invoice_list[i++])
+  
+    //- Invoice "Cards"
+    //- - var i = 0;
+    //- while i < invoice_list.length - 1
+    //-   div.row
+    //-     +invoiceCard(invoice_list[i++], 'left')
+    //-     +invoiceCard(invoice_list[i++], 'right')
+    //- 
+    //- if invoice_list[i]
+    //-   div.row
+    //-     +invoiceCard(invoice_list[i], 'left')
+    
+    //- Invoice List
+    //- ul
+    //- each invoice in invoice_list
+    //-   li
+    //-     a(href=invoice.url) #{invoice.invoice_number}
+    //-     | (#{invoice.project_name})
+    //- 
+    //- else
+    //-   p(class='text-center') There are no invoices yet! 
