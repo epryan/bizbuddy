@@ -53,6 +53,9 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
+// Static assets visible to select users
+app.use('/invoicing', express.static(path.join(__dirname, 'private/pdfs')));
+
 app.use(compression()); // Compress all routes
 app.use(helmet()); // Basic vulnerability mitigation
 
