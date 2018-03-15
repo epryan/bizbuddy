@@ -11,6 +11,8 @@ const puppeteer = require('puppeteer');
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 
+const MAX_BILLABLES = 10;
+
 //Display the invoicing index page
 exports.index = function(req, res) {
 
@@ -80,7 +82,7 @@ exports.invoice_create_get = function(req, res) {
 // Helper function to sanitize each dynamic billable which may or may not be empty
 function sanitizeBillables() {
   let status = [];
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < MAX_BILLABLES; i++) {
     status.push(sanitizeBody('description').trim().escape());
     status.push(sanitizeBody('quantity').trim().escape());
     status.push(sanitizeBody('unit_price').trim().escape());
@@ -130,7 +132,7 @@ exports.invoice_create_post = [
 
       // Create all non null billable items
       let billableArray = [];
-      for (i = 0; i < 5; i++) {
+      for (i = 0; i < MAX_BILLABLES; i++) {
         let desc = req.body.description[i];
         let qty = req.body.quantity[i];
         let unit = req.body.unit_price[i];

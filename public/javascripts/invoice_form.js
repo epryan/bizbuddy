@@ -1,4 +1,4 @@
-const MAXBILLABLES = 5;
+const MAXBILLABLES = 10;
 
 var nextId = 1;
 // Display the next available billable item in the form
