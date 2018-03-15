@@ -48,3 +48,7 @@ p {
 .bg-well{
   background: rgba(255, 255, 255, 0.8);
 }
+
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+  background-color: rgb(145, 197, 211);
+}
