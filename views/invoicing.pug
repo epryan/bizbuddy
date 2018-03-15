@@ -1,16 +1,27 @@
 extends app_layout
 
 block content
-  div(class='text-center')
+  div.container-fluid(class='text-center')
     h1 #{title}
-    p Welcome to the invoicing page, the perfect solution to your small business needs!
-
+    p= 'Hey Dottie, I hope youre having a base-tastic day!'
+    
     h3 Invoice metrics
 
     if error
       p Error retrieving invoice metrics
     else
-      p The database currently holds:
-      p #[strong Users:] !{data.user_count}
-      p #[strong Customers:] !{data.customer_count}
-      p #[strong Invoices:] !{data.invoice_count}
+      p Here is where your business is at:
+      div.row
+        div.col-xs-4
+          p #[strong Customers:] !{data.customer_count}
+        div.col-xs-4
+          p #[strong Invoices:] !{data.invoice_count}
+        div.col-xs-4
+          p #[strong $ Billed:] !{data.total_billed}
+    
+    h3= 'Job Map'
+    div.row
+      div.col-xs-12
+        div#map(style='height: 512px;')
+        script(src='/javascripts/invoice_map.js')
+        script(src='https://maps.googleapis.com/maps/api/js?key=AIzaSyCDf2tO99E7SkSIlFDBFOkfnF5ncp1dcMQ&callback=initMap' async defer)
