@@ -1,21 +1,21 @@
 extends app_layout
 
-mixin billable(div_id, isVisible)
+mixin billable(div_id, index, isVisible)
+  - var billable = (undefined===invoice ? undefined : invoice.billables[index])
   //- When isVisible===true, hidden=false else hidden='hidden'
-  div(id=div_id hidden=(true===isVisible ? false : 'hidden'))
+  div(id=div_id hidden=(undefined===billable ? (true===isVisible ? false : 'hidden') : false))
     div.form-group.col-xs-12.col-sm-6
       label(for= 'description') Description
-      input.form-control(type= 'text' name= 'description' placeholder= 'Description' value=(undefined===invoice ? '' : invoice.billables[div_id].description))
-
+      input.form-control(type= 'text' name= 'description' placeholder= 'Description' value=(undefined===billable ? '' : billable.description))
     div.form-group.col-xs-4.col-sm-2
       label(for= 'quantity') Quantity
-      input.form-control(type= 'number' name= 'quantity' placeholder= '120.0' min= '120' step='120' onchange="truncateAndUpdateTotal(this)")
+      input.form-control(type= 'number' name= 'quantity' placeholder= '120.0' min= '120' step='120' onchange="truncateAndUpdateTotal(this)" value=(undefined===billable ? '' : billable.quantity))
     div.form-group.col-xs-4.col-sm-2
       label(for= 'unit_price') Unit Price
-      input.form-control(type= 'number' name= 'unit_price' placeholder= '0.50' min= '0.5' step='0.05' onchange="truncateAndUpdateTotal(this)")
+      input.form-control(type= 'number' name= 'unit_price' placeholder= '0.50' min= '0.5' step='0.05' onchange="truncateAndUpdateTotal(this)" value=(undefined===billable ? '' : billable.unit_price))
     div.form-group.col-xs-4.col-sm-2
       label(for= 'total_price') Total Price
-      input.form-control(type= 'text' name= 'total_price' placeholder= '60.00' onchange="truncateAmount(this)" readonly)
+      input.form-control(type= 'text' name= 'total_price' placeholder= '60.00' onchange="truncateAmount(this)" readonly value=(undefined===billable ? '' : billable.total_price))
     hr
 
 block content
@@ -36,7 +36,7 @@ block content
     div.row
       div.form-group.col-md-6
         label(for='invoice_date') Billing Date(*)
-        input#invoice_date.form-control(type='date', name='invoice_date' value=(undefined===invoice ? '' : invoice.invoice_date))
+        input#invoice_date.form-control(type='date', name='invoice_date' value=(undefined===invoice ? '' : invoice.invoice_date_picker_format))
       div.form-group.col-md-6
         label(for='bill_to') Invoice to(*)
         select#bill_to.form-control(type='select', name='bill_to')
@@ -55,7 +55,7 @@ block content
     div.row
       div.form-group.col-xs-6
         label(for='project_date') Project Date(*)
-        input#project_date.form-control(type='date', name='project_date' value=(undefined===invoice ? '' : invoice.project_date))
+        input#project_date.form-control(type='date', name='project_date' value=(undefined===invoice ? '' : invoice.project_date_picker_format))
               
       div.form-group.col-xs-6
         label(for='project_number') Project Number(*)
@@ -90,9 +90,9 @@ block content
       - var i = 0;
       while i < 5
         if i == 0
-          +billable('billable_' + i++, true)
+          +billable('billable_' + i, i++, true)
         else
-          +billable('billable_' + i++, false)
+          +billable('billable_' + i, i++, false)
     div.text-center
       button.btn.btn-primary.btn-half-width(type='button' onClick='showNextBillable()') More Work
 

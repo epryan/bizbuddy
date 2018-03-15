@@ -11,6 +11,28 @@ mixin billable_row(billable_item)
     td.text-center
       span.mono= billable_item.total_price.toFixed(2)
 
+mixin admin_bar(isVisible)
+  div.container-fluid.well(style='background-color: skyblue;' hidden=(true===isVisible ? false : 'hidden'))
+    div.row.text-center
+      //- Download
+      div.col-xs-4
+        p
+          b='Download'
+        a(href='/invoicing/Invoice' + invoice.invoice_number + '.pdf')
+          button.btn.btn-primary(type='button')= 'Invoice' + invoice.invoice_number + '.pdf'
+      
+      //- Print
+      div.col-xs-4
+        p
+          b='Print'
+      
+      //- Send
+      div.col-xs-4  
+        p
+          b='Email'
+        input(type='text' value= (undefined === invoice.billing_to.billing_email ? '' : invoice.billing_to.billing_email))
+        button.btn.btn-primary(type='button')='Send'
+
 doctype html
 html(lang='en')
   head
@@ -20,6 +42,8 @@ html(lang='en')
     link(rel='stylesheet', href='/stylesheets/invoice-style.css')
 
   body
+    +admin_bar(toolbar_visible)
+            
     div.container.invoice
       div.invoice-header
         div.row
@@ -146,9 +170,6 @@ html(lang='en')
                   b Dottie Gibbs
                 p= '(425) 229-2480'
                 p= 'dottie@basebydottie.com'
-                //- dd= invoice.project_number
-                //- dd= invoice.project_name
-                //- dd= invoice.project_address
 
       div.invoice-footer
         p= 'Please make all checks payable to Base By Dottie LLC.'

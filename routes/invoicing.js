@@ -18,6 +18,10 @@ router.get('/invoice/create', invoice_controller.invoice_create_get);
 router.post('/invoice/create', invoice_controller.invoice_create_post);
 
  // MUST COME LAST //
+
+//GET request for a printable invoice
+router.get('/invoice/printable/:id', invoice_controller.invoice_printable);
+
 //GET request for a specific invoice
 router.get('/invoice/:id', invoice_controller.invoice_detail);
 

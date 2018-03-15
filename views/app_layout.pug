@@ -1,3 +1,67 @@
+mixin customerListCard(customer)
+  div.row
+    a(href=customer.url style='display:block;')
+      div.col-xs-12.text-left.well
+        div.row
+          div.col-xs-3.col-sm-2
+            img.icon-customer-list(src=(undefined===customer.profile_image ? '/images/default-profile.png' : customer.profile_image) alt='Customer Logo' width='75%')
+          div.col-xs-9.col-sm-10
+            p= customer.nickname
+            p= customer.legal_name
+
+mixin customerDetailCard(customer)
+  div.row
+    div.col-xs-12.text-left.well
+      div.row
+        div.col-xs-3.col-sm-2
+          img.icon-customer-list(src=(undefined===customer.profile_image ? '/images/default-profile.png' : customer.profile_image) alt='Customer Logo' width='75%')
+        div.col-xs-9.col-sm-10
+          p= customer.nickname
+          p= customer.legal_name
+      hr
+      div.row
+        div.col-xs-3.col-sm-2
+          img.icon-customer-list(src='/images/icon_mail.png' alt='Mail Logo' width='75%')
+        div.col-xs-9.col-sm-10
+          p= customer.address_line_1
+          p= customer.address_line_2
+      hr
+      div.row
+        div.col-xs-3.col-sm-2
+          img.icon-customer-list(src='/images/icon_phone.png' alt='Phone Logo' width='75%')
+        div.col-xs-9.col-sm-10
+          if customer.contact_number
+            p= customer.contact_number
+          if customer.billing_number
+            p= customer.billing_number
+      hr
+      div.row
+        div.col-xs-3.col-sm-2
+          img.icon-customer-list(src='/images/icon_email.png' alt='Email Logo' width='75%')
+        div.col-xs-9.col-sm-10
+          if customer.contact_email
+            p= customer.contact_email
+          if customer.billing_email
+            p= customer.billing_email
+            
+mixin custCard(customer, float)
+  a(href=customer.url style='display:block;')
+    div.col-xs-12.col-md-5.text-center.well(style='background-color: rgb(145, 197, 211); color: white; float:' + float)
+      div.row
+        div.col-xs-12
+          p
+            b= customer.nickname
+      div.row.text-left
+        p= customer.legal_name
+        p= customer.address_line_1
+        p= customer.address_line_2
+        if customer.contact_number
+          p= customer.contact_number
+        if customer.contact_email
+          p= customer.contact_email
+        if customer.billing_email
+          p= customer.billing_email
+          
 //- Syntactical sugar to beautify nav links
 mixin nav-item(link, name)
   li
