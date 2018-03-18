@@ -6,7 +6,7 @@ var Schema = mongoose.Schema;
 var { AddressSchema } = require('./address');
 
 var UserSchema = new Schema({
-  username: {type: String},
+  username: {type: String, unique: true},
   legal_name: {type: String, required: true, min: 1, max:64}, // general max
   nickname: {type: String, required: false, min: 1, max:64}, // general max
   description: {type: String, max:25}, // formatting max
