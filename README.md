@@ -7,10 +7,10 @@
   - Create and configure the .env file based on .env.default
   - npm install
 
-  (For Local Database Only)
-  - Create database folders (eg. bizbuddy/data/db)
-  - Spawn the mongod instance to handle db connections
-    - mongod --fork --logpath logs/mongodb.log --dbpath data/db
+    (For Local Database Only)
+    - Create database folders (eg. bizbuddy/data/db)
+    - Spawn the mongod instance to handle db connections
+      - mongod --fork --logpath logs/mongodb.log --dbpath data/db
 
   - Start the web app!
     - npm run start
