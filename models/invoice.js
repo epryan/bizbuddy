@@ -17,7 +17,7 @@ var InvoiceSchema = new Schema({
   billing_from: {type: UserSchema}, // embedded: the state of the user at the time of the invoice
   billing_to: {type: CustomerSchema}, // embedded: the state of the customer at the time of the invoice
   // Invoice-specific fields
-  invoice_number: {type: String, required: true, min: 1, max:16}, // most will be 8 or 9: year + [i]th invoice that year
+  invoice_number: {type: String, required: true, unique: true, min: 1, max:16}, // most will be 8 or 9: year + [i]th invoice that year
   invoice_date: {type: Date, required: true},
   // Job fields
   project_date: {type: Date},
