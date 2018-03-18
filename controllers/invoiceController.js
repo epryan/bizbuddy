@@ -267,7 +267,8 @@ function renderInvoiceForm(req, res, billTo, invoice, errors) {
  * invoice detail page. Convert the page into a pdf for later retreival.
  */
 async function createPdf(invoiceNumber, cookieValue)  {
-  const browser = await puppeteer.launch();
+  // Temporarily overriding sandbox due to "unsupported" use case
+  const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
   const page = await browser.newPage();
   const port = process.env.PORT;
   const httpLoginUrl = 'http://localhost:' + port + '/login';
