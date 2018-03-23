@@ -26,7 +26,7 @@ exports.index = function(req, res) {
             _id: null,
             total: { $sum: "$invoice_total" }
             }
-          }], callback)
+          }], callback);
     },
     user_count: function(callback) {
       User.count(callback);
@@ -36,7 +36,11 @@ exports.index = function(req, res) {
     },
   }, function(err, results) {
     // Unpack the aggregation result and render
-    results.total_billed = results.total_billed[0].total.toFixed(2);
+    if (results.total_billed[0]) {
+      results.total_billed = results.total_billed[0].total.toFixed(2);
+    } else {
+      results.total_billed = 0;
+    }
     res.render('invoicing', { title: 'Invoicing', error: err, data: results});
   });
 };
