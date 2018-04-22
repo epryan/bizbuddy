@@ -12,26 +12,31 @@ mixin billable_row(billable_item)
       span.mono= billable_item.total_price.toFixed(2)
 
 mixin admin_bar(isVisible)
-  div.container-fluid.well(style='background-color: skyblue;' hidden=(true===isVisible ? false : 'hidden'))
-    div.row.text-center
-      //- Download
-      div.col-xs-4
-        p
-          b='Download'
-        a(href='/invoicing/Invoice' + invoice.invoice_number + '.pdf')
-          button.btn.btn-primary(type='button')= 'Invoice' + invoice.invoice_number + '.pdf'
-      
-      //- Print
-      div.col-xs-4
-        p
-          b='Print'
-      
-      //- Send
-      div.col-xs-4  
-        p
-          b='Email'
-        input(type='text' value= (undefined === invoice.billing_to.billing_email ? '' : invoice.billing_to.billing_email))
-        button.btn.btn-primary(type='button')='Send'
+  div.container-fluid.well(style='background-color: skyblue; width: 100% !important' hidden=(true===isVisible ? false : 'hidden'))
+    div.row.text-right
+      a(href='')
+        img.logo(src='/images/icon_printer.png' alt='Printer Logo')
+      a(href='/invoicing/Invoice' + invoice.invoice_number + '.pdf')
+        img.logo(src='/images/icon_pdf.png' alt='Pdf Logo')
+        
+      //- //- Download
+      //- div.col-xs-4
+      //-   p
+      //-     b='Download'
+      //-   a(href='/invoicing/Invoice' + invoice.invoice_number + '.pdf')
+      //-     button.btn.btn-primary(type='button')= 'Invoice' + invoice.invoice_number + '.pdf'
+      //- 
+      //- //- Print
+      //- div.col-xs-4
+      //-   p
+      //-     b='Print'
+      //- 
+      //- //- Send
+      //- div.col-xs-4  
+      //-   p
+      //-     b='Email'
+      //-   input(type='text' value= (undefined === invoice.billing_to.billing_email ? '' : invoice.billing_to.billing_email))
+      //-   button.btn.btn-primary(type='button')='Send'
 
 doctype html
 html(lang='en')
@@ -45,6 +50,7 @@ html(lang='en')
     +admin_bar(toolbar_visible)
             
     div.container.invoice
+      //- +admin_bar(toolbar_visible)
       div.invoice-header
         div.row
           div.col-xs-7
