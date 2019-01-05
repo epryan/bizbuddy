@@ -248,11 +248,15 @@ function renderInvoiceForm(req, res, billTo, invoice, errors) {
       .exec(callback);
     }
   }, function(err, results) {
-      // Generate an invoice number (default is '20180001')
-      let nextInvoiceNumber = '20180001';
+      // Generate an invoice number (default is 'YEAR' + '0001')
+      let year = moment().year().toString();
+      let nextInvoiceNumber = year + "0001";
       if (results.newestInvoice) {
-        // determine next invoice number
-        nextInvoiceNumber = (parseInt(results.newestInvoice.invoice_number) + 1).toString();
+	newestInvoiceNumber = parseInt(results.newestInvoice.invoice_number);
+	// Check for a change in the year (eg. 20181234 -> 20190001)
+	if ( newestInvoiceNumber >= parseInt(nextInvoiceNumber) ) {
+		nextInvoiceNumber = (newestInvoiceNumber + 1).toString();
+	}
       }
 
       if (!invoice) {
