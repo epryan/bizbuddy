@@ -5,7 +5,7 @@ block content
     h1 #{title}
     p= 'Hey Dottie, I hope youre having a base-tastic day!'
 
-    h3 Invoice metrics
+    h3 Year-To-Date Metrics
 
     if error
       p Error retrieving invoice metrics
@@ -17,7 +17,7 @@ block content
         div.col-xs-4
           p #[strong Invoices:] !{data.invoice_count}
         div.col-xs-4
-          p #[strong $ Billed:] !{data.total_billed}
+          p #[strong Billed: $]!{data.total_billed}
 
     h3= 'Job Maps'
     div.row

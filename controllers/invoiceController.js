@@ -15,18 +15,21 @@ const MAX_BILLABLES = 10;
 
 //Display the invoicing index page
 exports.index = function(req, res) {
-
+  invoiceNumberStart = moment().year().toString() + '0000';
   async.parallel({
     invoice_count: function(callback) {
-      Invoice.count(callback);
+      Invoice.count(
+          {'invoice_number': { $gte: invoiceNumberStart } }, 
+          callback
+      );
     },
     total_billed: function(callback) {
       Invoice.aggregate(
-        [{$group: {
-            _id: null,
-            total: { $sum: "$invoice_total" }
-            }
-          }], callback);
+        [
+            { $match: { 'invoice_number': { $gte: invoiceNumberStart } } },
+            { $group: { _id: null, total: { $sum: "$invoice_total" } } }
+        ], callback
+      );
     },
     user_count: function(callback) {
       User.count(callback);
