@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "devstart": "nodemon ./bin/www"
+    "devstart": "nodemon ./bin/www",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "dependencies": {
     "async": "^2.6.0",
@@ -26,9 +28,11 @@
     "passport-local": "^1.0.0",
     "pug": "^2.0.0-rc.4",
     "puppeteer": "^1.1.1",
-    "serve-favicon": "~2.4.5"
+    "serve-favicon": "~2.4.5",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "nodemon": "^1.14.8"
-  }
+  },
+  "snyk": true
 }
